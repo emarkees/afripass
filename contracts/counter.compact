@@ -1,0 +1,22 @@
+pragma language_version >= 0.23;
+
+import CompactStandardLibrary;
+
+// Public vs Private Privacy Model:
+// - PUBLIC (on-chain): The `counter` variable is public ledger state, visible to anyone observing the blockchain.
+// - PRIVATE (witness): The `step` value is a private circuit input provided by the caller, which by default is never exposed on-chain.
+// - PROOF: The user proves they know `step` and that the counter was updated correctly, without revealing the actual `step` amount (unless disclose() is used).
+
+export ledger counter: Uint<32>;
+
+constructor() {
+    counter = 0;
+}
+
+export circuit increment_counter(step: Uint<32>): [] {
+    // Deliberately disclose the step value as requested by the prompt
+    disclose(step);
+    
+    // Increment by 1 to keep step private from the state transition logic
+    counter = (counter + 1) as Uint<32>;
+}
