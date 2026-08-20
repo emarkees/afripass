@@ -68,14 +68,14 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('increment_counter',
                                      'argument 1 (as invoked from Typescript)',
-                                     'counter.compact line 16 char 1',
+                                     'counter.compact line 28 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
         if (!(typeof(step_0) === 'bigint' && step_0 >= 0n && step_0 <= 4294967295n)) {
           __compactRuntime.typeError('increment_counter',
                                      'argument 1 (argument 2 as invoked from Typescript)',
-                                     'counter.compact line 16 char 1',
+                                     'counter.compact line 28 char 1',
                                      'Uint<0..4294967296>',
                                      step_0)
         }
@@ -162,7 +162,7 @@ export class Contract {
     step_0;
     const tmp_0 = ((t1) => {
                     if (t1 > 4294967295n) {
-                      throw new __compactRuntime.CompactError('counter.compact line 21 char 15: cast from Field or Uint value to smaller Uint value failed: ' + t1 + ' is greater than 4294967295');
+                      throw new __compactRuntime.CompactError('counter.compact line 33 char 15: cast from Field or Uint value to smaller Uint value failed: ' + t1 + ' is greater than 4294967295');
                     }
                     return t1;
                   })(_descriptor_0.fromValue(__compactRuntime.queryLedgerState(context,
