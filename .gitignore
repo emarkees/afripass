@@ -61,3 +61,5 @@ temp/
 
 # Midnight LevelDB private state store
 midnight-level-db/
+
+.next

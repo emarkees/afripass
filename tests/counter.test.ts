@@ -17,8 +17,9 @@ import {
  */
 async function deployLocal() {
   const contract = new Contract({});
-  const zswapLocalState = emptyZswapLocalState();
-  const constructorCtx = createConstructorContext(zswapLocalState);
+  const coinPk = dummyContractAddress();
+  const zswapLocalState = emptyZswapLocalState(coinPk);
+  const constructorCtx = createConstructorContext({}, coinPk);
   const initResult = await contract.initialState(constructorCtx);
 
   return {
@@ -38,7 +39,6 @@ function makeCircuitContext(
   zswapLocalState: any,
 ) {
   return createCircuitContext(
-    'increment_counter',
     dummyContractAddress(),
     zswapLocalState.coinPublicKey,
     state.data,
@@ -59,7 +59,7 @@ describe('Counter Contract', () => {
 
   // ── Test 2: State transitions — increment updates ledger ─
   it('should increment the counter after calling increment_counter', async () => {
-    const { contract, state, privateState, zswapLocalState } =
+    let { contract, state, privateState, zswapLocalState } =
       await deployLocal();
 
     // First increment (step = 5n — but contract always adds 1 to counter)
@@ -67,28 +67,26 @@ describe('Counter Contract', () => {
     const result1 = await contract.circuits.increment_counter(ctx1, 5n);
 
     // Update state from the circuit result
-    state.data = new ChargedState(
-      (result1.context.currentQueryContext ?? result1.context.callContext?.currentQueryContext).state.state,
-    );
+    const queryCtx1 = result1.context.currentQueryContext ?? (result1.context as any).callContext?.currentQueryContext;
+    state.data = queryCtx1.state;
     expect(ledger(state.data).counter).toBe(1n);
 
     // Second increment — counter should be 2
     const ctx2 = makeCircuitContext(
       state,
-      result1.context.currentPrivateState ?? result1.context.callContext?.currentPrivateState,
-      result1.context.currentZswapLocalState ?? result1.context.callContext?.currentZswapLocalState,
+      result1.context.currentPrivateState ?? (result1.context as any).callContext?.currentPrivateState,
+      result1.context.currentZswapLocalState ?? (result1.context as any).callContext?.currentZswapLocalState,
     );
     const result2 = await contract.circuits.increment_counter(ctx2, 10n);
 
-    state.data = new ChargedState(
-      (result2.context.currentQueryContext ?? result2.context.callContext?.currentQueryContext).state.state,
-    );
+    const queryCtx2 = result2.context.currentQueryContext ?? (result2.context as any).callContext?.currentQueryContext;
+    state.data = queryCtx2.state;
     expect(ledger(state.data).counter).toBe(2n);
   });
 
   // ── Test 3: Privacy — private inputs never exposed in results ─
   it('should not expose the private step value in the circuit results', async () => {
-    const { contract, state, privateState, zswapLocalState } =
+    let { contract, state, privateState, zswapLocalState } =
       await deployLocal();
 
     const stepValue = 42n;
@@ -100,13 +98,12 @@ describe('Counter Contract', () => {
 
     // The counter changed (state transition happened), proving the
     // circuit ran, but the step value itself is not in the result.
-    state.data = new ChargedState(
-      (result.context.currentQueryContext ?? result.context.callContext?.currentQueryContext).state.state,
-    );
+    const queryCtx = result.context.currentQueryContext ?? (result.context as any).callContext?.currentQueryContext;
+    state.data = queryCtx.state;
     expect(ledger(state.data).counter).toBe(1n);
 
     // Private state is preserved and not leaked into public data
-    expect(result.context.currentPrivateState ?? result.context.callContext?.currentPrivateState).toBeDefined();
+    expect(result.context.currentPrivateState ?? (result.context as any).callContext?.currentPrivateState).toBeDefined();
   });
 
   // ── Test 4: Boundary — step must be within Uint<32> range ──
@@ -116,15 +113,15 @@ describe('Counter Contract', () => {
 
     const ctx = makeCircuitContext(state, privateState, zswapLocalState);
 
-    // Uint<32> max is 2^32 - 1 = 4294967295; passing 2^32 should throw
-    await expect(
-      contract.circuits.increment_counter(ctx, 2n ** 32n),
-    ).rejects.toThrow();
+    // Uint<32> max is 2^32 - 1 = 4294967295; passing 2^32 should throw type error
+    expect(() => {
+      contract.circuits.increment_counter(ctx, 2n ** 32n);
+    }).toThrow();
   });
 
   // ── Test 5: Accumulation — multiple increments accumulate ─
   it('should accumulate counter value over multiple increments', async () => {
-    const { contract, state, privateState, zswapLocalState } =
+    let { contract, state, privateState, zswapLocalState } =
       await deployLocal();
 
     let currentPrivateState = privateState;
@@ -138,11 +135,10 @@ describe('Counter Contract', () => {
         ctx,
         BigInt(i + 1),
       );
-      state.data = new ChargedState(
-        (result.context.currentQueryContext ?? result.context.callContext?.currentQueryContext).state.state,
-      );
-      currentPrivateState = result.context.currentPrivateState ?? result.context.callContext?.currentPrivateState;
-      currentZswap = result.context.currentZswapLocalState ?? result.context.callContext?.currentZswapLocalState;
+      const queryCtx = result.context.currentQueryContext ?? (result.context as any).callContext?.currentQueryContext;
+      state.data = queryCtx.state;
+      currentPrivateState = result.context.currentPrivateState ?? (result.context as any).callContext?.currentPrivateState;
+      currentZswap = result.context.currentZswapLocalState ?? (result.context as any).callContext?.currentZswapLocalState;
     }
 
     const finalLedger = ledger(state.data);
