@@ -1,1173 +1,1059 @@
-# AFRIPASS — MIDNIGHT BUILDER CHALLENGE
+# AFRIPASS — LEVEL 2 MIDNIGHT BUILDER CHALLENGE
 
-## Level 1: New Moon — Setup, Privacy Foundation & First Contract
+You are helping me complete **Level 2 of the Midnight Builder Challenge on Rise In**.
 
-You are helping me build **AfriPass**, a privacy-preserving financial passport for Africa, for the **Midnight Builder Challenge on Rise In**.
-
-My existing GitHub repository is:
+My repo from Level 1 is at:
 
 ```text
-[PASTE MY AFRIPASS PROJECT PATH HERE]
+[PASTE REPO PATH]
 ```
 
-Work directly inside this existing AfriPass repository.
+My Preprod contract address is:
 
-Do NOT create a second permanent project or GitHub repository.
+```text
+[PASTE CONTRACT ADDRESS]
+```
 
-The purpose of Level 1 is to establish the Midnight development foundation and produce a small but meaningful AfriPass-oriented Compact contract that demonstrates:
+My project is called **AfriPass**.
 
-* Public ledger state
-* Private witness/input
-* Zero-knowledge circuit logic
-* Deliberate use of `disclose()`
-* Compilation
-* Generated `managed/` artifacts
-* Automated tests
-* Preview or Preprod deployment
-* A documented privacy model
-* A clear AfriPass product idea
+AfriPass is a privacy-first financial identity/verification concept that uses Midnight's zero-knowledge technology to allow users to prove selected financial claims without unnecessarily revealing their underlying private information.
 
-The Level 1 contract is a technical foundation for future AfriPass functionality. Do not attempt to build the complete financial passport in Level 1.
+**Level 1 has already been completed and approved.**
+
+Do NOT redo Level 1 unless a Level 1 artifact is genuinely required for Level 2.
+
+The primary objective of Level 2 is to add a working frontend that connects to the existing Preprod AfriPass contract through Lace and demonstrates privacy-preserving circuit interaction.
 
 ---
 
-# IMPORTANT DEVELOPMENT RULES
+════════════════════════════════════════
+MIDNIGHT DOCS MCP — ADD THIS FIRST
+════════════════════════════════════════
 
-1. Work incrementally.
-2. Do not skip steps.
-3. Do not invent Midnight APIs, Compact syntax, commands, package names, or deployment procedures.
-4. Before using Midnight-specific syntax, verify it against the current official Midnight documentation.
-5. Prefer the official Midnight documentation over old tutorials, blog posts, or outdated examples.
-6. If the challenge instructions conflict with the current Midnight documentation, stop and explain the conflict before making a destructive change.
-7. Do not replace existing AfriPass files without inspecting them first.
-8. Do not overwrite an existing `package.json` unless necessary.
-9. Do not commit secrets, private keys, wallet credentials, `.env` files, or generated sensitive credentials.
-10. Never put real financial information into the Level 1 demo.
-11. Use synthetic/demo financial data only.
-12. Do not claim that a private value is hidden if the actual implementation exposes it.
-13. Do not create fake contract addresses, test results, screenshots, or deployment results.
-14. Never say a requirement is complete unless it has actually been verified.
-15. After every major step, report what succeeded, what failed, and what remains.
-16. When an operation requires my wallet funding or manual approval, STOP and wait for me.
-17. Keep the Level 1 implementation small enough to understand and demonstrate.
+Before starting, make sure the Midnight documentation MCP is connected.
 
----
-
-# PROJECT VISION
-
-## What is AfriPass?
-
-AfriPass is a privacy-preserving financial passport designed to allow individuals and businesses to prove selected financial credentials without unnecessarily exposing their complete underlying financial information.
-
-The long-term vision is to allow a user to prove claims such as:
-
-```text
-Income > ₦300,000
-Savings history > 12 months
-Repayment rate > 90%
-Business activity verified
-```
-
-without requiring the verifier to receive the user's entire financial history.
-
-The core principle is:
-
-> VERIFY MORE. REVEAL LESS.
-
----
-
-# THE PROBLEM AFRIPASS SOLVES
-
-Financial institutions often require customers to provide extensive personal and financial information when applying for loans, credit, financial products, or other services.
-
-This can result in:
-
-* Excessive disclosure of personal financial information
-* Fragmented financial identities
-* Repeated submission of financial documents
-* Privacy risks
-* Increased consequences of data breaches
-* Difficulty carrying financial credentials between institutions
-* Barriers for individuals and small businesses with limited formal financial histories
-
-AfriPass explores a privacy-first alternative:
-
-Instead of:
-
-```text
-USER
-   ↓
-Complete bank statement
-   ↓
-LENDER
-```
-
-AfriPass aims toward:
-
-```text
-USER
-   ↓
-Private financial information
-   ↓
-Privacy-preserving proof
-   ↓
-LENDER
-   ↓
-"Requirement satisfied"
-```
-
-The lender should eventually be able to verify a claim without receiving unnecessary underlying information.
-
----
-
-# LEVEL 1 PRODUCT OBJECTIVE
-
-Do NOT attempt to build the complete AfriPass financial system.
-
-Level 1 should demonstrate the technical foundation required for AfriPass.
-
-Build a small **AfriPass Financial Eligibility Proof prototype**.
-
-The contract should conceptually demonstrate:
-
-```text
-Private financial credential
-        ↓
-Circuit
-        ↓
-Verification condition
-        ↓
-Selective disclosure
-        ↓
-Public/verifiable result
-```
-
-Use synthetic data.
-
-Example:
-
-```text
-Private income = 350000
-Public eligibility result = true
-```
-
-The private value should not automatically become public simply because it was used by the circuit.
-
-The exact implementation must follow the current Compact language and Midnight privacy model.
-
----
-
-# ============================================================
-
-# STEP 0 — INSPECT THE EXISTING AFRIPASS REPOSITORY
-
-# ============================================================
-
-Before installing or changing anything, inspect the repository.
-
-Run:
-
-```bash
-pwd
-git status
-ls -la
-find . -maxdepth 2 -type f | sort
-```
-
-Inspect:
-
-```text
-package.json
-README.md
-.gitignore
-existing source files
-existing contracts
-existing tests
-```
-
-Do not delete existing AfriPass work.
-
-Determine whether the repository already contains a Node project.
-
-Report:
-
-```text
-Project path:
-Existing package.json:
-Existing Node project:
-Existing Midnight files:
-Existing tests:
-Existing README:
-Git status:
-```
-
-Then continue.
-
----
-
-# ============================================================
-
-# STEP 1 — TOOLCHAIN SETUP
-
-# ============================================================
-
-Verify Node.js:
-
-```bash
-node --version
-```
-
-Requirement:
-
-```text
-Node.js v22.x.x
-```
-
-If Node.js is not v22, STOP and tell me exactly how to install/use Node.js 22.
-
-Verify npm:
-
-```bash
-npm --version
-```
-
-Verify Git:
-
-```bash
-git --version
-```
-
-Verify Docker:
-
-```bash
-docker --version
-```
-
-Verify Docker is actually running:
-
-```bash
-docker info
-```
-
-If Docker is not running, STOP and tell me to start Docker.
-
----
-
-## Install Compact Compiler
-
-Install:
-
-```bash
-npm install -g @midnight-ntwrk/compact-compiler
-```
-
-Then verify:
-
-```bash
-compact --version
-```
-
-Do not continue until a version number is returned.
-
-IMPORTANT:
-
-Before assuming the package name or command is still current, verify the current Midnight documentation.
-
-If the current official documentation uses a different installation method, explain the difference and use the current documented method.
-
----
-
-## Proof Server
-
-Pull:
-
-```bash
-docker pull midnightnetwork/proof-server
-```
-
-Run:
-
-```bash
-docker run --name midnight-proof-server -p 6300:6300 midnightnetwork/proof-server
-```
-
-If the container already exists:
-
-```bash
-docker ps -a
-```
-
-Determine whether it can be started instead of creating another container.
-
-Verify the proof server is running.
-
-Do not create duplicate proof-server containers unnecessarily.
-
----
-
-# ============================================================
-
-# STEP 2 — MIDNIGHT DOCUMENTATION MCP
-
-# ============================================================
-
-The challenge instructions provide:
+Run this command in your terminal:
 
 ```bash
 claude mcp add --transport http midnight-docs https://midnight.mcp.kapa.ai
 ```
 
-If using Claude Code, this may be used.
-
-If using Antigravity, do NOT blindly use the Claude command.
-
-Use Antigravity's MCP configuration mechanism.
-
-Expected conceptual configuration:
-
-```json
-{
-  "mcpServers": {
-    "midnight-docs": {
-      "serverUrl": "https://midnight.mcp.kapa.ai"
-    }
-  }
-}
-```
-
-If the server returns:
+Or access the docs directly at:
 
 ```text
-Unauthorized
+https://midnight.mcp.kapa.ai
 ```
 
-do not repeatedly retry.
+This gives you live Midnight documentation inside every AI response.
 
-Report the error and continue using the official Midnight documentation if available.
+IMPORTANT:
 
-MCP failure must not prevent Level 1 development unless the challenge explicitly requires it.
+Before installing Midnight.js packages or implementing the wallet connection, verify the **current official Midnight documentation**.
+
+Do not blindly use outdated Midnight tutorials or APIs.
+
+If a package, API, or command in this prompt has changed, use the currently supported implementation while preserving the Level 2 requirements.
+
+Do not invent Midnight APIs.
 
 ---
 
-# ============================================================
+════════════════════════════════════════
+STEP 1 — FILE STRUCTURE
+════════════════════════════════════════
 
-# STEP 3 — HELLO WORLD TOOLCHAIN VALIDATION
-
-# ============================================================
-
-The Hello World deployment is a toolchain validation exercise.
-
-Because this repository is already AfriPass, create the Hello World scaffold as a temporary validation project.
-
-Do not turn `mn-demo` into the AfriPass project.
-
-From the appropriate parent directory:
-
-```bash
-npx -y create-mn-app mn-demo --template hello-world --use-npm
-```
-
-Enter it:
-
-```bash
-cd mn-demo
-```
-
-Inspect:
-
-```bash
-ls -la
-find . -maxdepth 2 -type f | sort
-```
-
-Install dependencies if required:
-
-```bash
-npm install
-```
-
-Inspect available npm scripts:
-
-```bash
-npm run
-```
-
-Before deployment, verify the current Midnight deployment instructions.
-
-Then attempt Preview deployment:
-
-```bash
-NODE_OPTIONS="--max-old-space-size=12288" npm run deploy -- --network preview
-```
-
----
-
-# WALLET FUNDING STOP CONDITION
-
-When the wallet address appears:
-
-STOP.
-
-Do NOT continue deployment.
-
-Show me:
+Extend the Level 1 structure by adding the frontend:
 
 ```text
-Wallet address:
-<address>
+my-project/
+├── contracts/
+│   └── counter.compact
+├── managed/
+├── src/
+│   ├── components/
+│   │   ├── WalletConnect.tsx
+│   │   ├── CircuitCall.tsx
+│   │   └── PrivacyStatus.tsx
+│   │
+│   ├── hooks/
+│   │   └── useMidnight.ts
+│   │
+│   ├── App.tsx
+│   └── main.tsx
+│
+├── tests/
+├── public/
+├── .github/
+├── README.md
+├── package.json
+└── vite.config.ts
 ```
 
-Tell me that I need to fund the wallet using the appropriate official Midnight Preview faucet.
+If the existing AfriPass repository already contains a frontend, **extend the existing frontend instead of creating a duplicate application**.
 
-WAIT for my confirmation that the wallet has been funded.
-
-Do not pretend that funding occurred.
+Do not delete the Level 1 contract or generated `managed/` directory.
 
 ---
 
-# AFTER WALLET FUNDING
+════════════════════════════════════════
+STEP 2 — FRONTEND SETUP
+════════════════════════════════════════
 
-Continue the deployment only after I confirm funding.
-
-Use the current documented deployment command.
-
-After successful deployment, run the appropriate network command, if supported by the generated project:
+* Scaffold a React + Vite project, or use the existing React/Vite frontend if already present.
+* Use TypeScript.
+* Install the currently supported Midnight.js SDK and DApp connector packages.
+* The original challenge prompt references:
 
 ```bash
-npm run network preview
+npm install @midnight-ntwrk/midnight-js-network-provider
+npm install @midnight-ntwrk/dapp-connector-api
 ```
 
-Capture the deployed Hello World contract address.
+Before installing, verify whether these are still the correct/current packages.
 
-Clearly report:
+Use the current official Midnight documentation if package names or APIs have changed.
 
-```text
-HELLO WORLD CONTRACT
+The frontend must communicate with the **existing Level 1 AfriPass Preprod contract**.
 
-Network: Preview
-Address: <REAL ADDRESS>
+Do NOT create a fake contract or mock the blockchain interaction for the final implementation.
+
+Confirm the project builds with no errors:
+
+```bash
+npm run build
 ```
 
-Do not confuse this address with the AfriPass Level 1 contract address.
+If supported:
+
+```bash
+npx tsc --noEmit
+```
+
+Both should pass before continuing.
 
 ---
 
-# ============================================================
+════════════════════════════════════════
+STEP 2A — AFRIPASS UI DESIGN
+════════════════════════════════════════
 
-# STEP 4 — RETURN TO AFRIPASS
+The frontend must look like a professional **privacy-first financial technology application**, not a generic blockchain demo.
 
-# ============================================================
+The primary visual concepts are:
 
-Return to the existing AfriPass repository.
+```text
+AFRICA
++
+FINANCE
++
+PRIVACY
++
+ZERO-KNOWLEDGE PROOFS
++
+SECURE DIGITAL IDENTITY
+```
+
+The interface should immediately communicate that AfriPass is designed around privacy.
+
+Use a clean, modern and professional design.
+
+Avoid excessive animations, unnecessary Web3 jargon, or overly complicated dashboards.
+
+---
+
+### HERO SECTION
+
+The homepage should contain a strong hero section.
+
+Use messaging similar to:
+
+```text
+Your Financial Identity.
+Without Unnecessary Disclosure.
+```
+
+Supporting text:
+
+```text
+AfriPass lets you prove selected financial credentials
+using zero-knowledge technology without unnecessarily
+exposing the information behind them.
+```
+
+Primary CTA:
+
+```text
+Connect Lace
+```
+
+After wallet connection, the primary action may become:
+
+```text
+Verify Privately
+```
+
+Include a visible privacy indicator:
+
+```text
+🔒 Privacy-first verification powered by Midnight
+```
+
+---
+
+════════════════════════════════════════
+STEP 2B — PRIVACY IMAGES / VISUALS
+════════════════════════════════════════
+
+The frontend MUST include visual elements/images that immediately communicate **privacy and secure financial information**.
+
+Use appropriate high-quality visual assets.
+
+The visual theme should include concepts such as:
+
+* Digital privacy
+* Shield
+* Lock
+* Encrypted financial information
+* Zero-knowledge proofs
+* Secure digital identity
+* Private credentials
+* Selective disclosure
+* Financial data protection
+
+A hero illustration should communicate this concept:
+
+```text
+PRIVATE FINANCIAL DATA
+          ↓
+       🔒 SHIELD
+          ↓
+ ZERO-KNOWLEDGE PROOF
+          ↓
+       ✓ VERIFIED
+```
+
+The image should be abstract or use synthetic information.
+
+NEVER use:
+
+* Real bank statements
+* Real account numbers
+* Real credit-card numbers
+* Real personal financial information
+* Real people's private documents
+
+The images must support the privacy story rather than distract from the application.
+
+---
+
+### PRIVACY VISUAL CARDS
+
+Add three visual information cards somewhere below the hero section.
+
+#### Card 1
+
+```text
+🔒
+KEEP DATA PRIVATE
+
+Sensitive information remains
+a private input during verification.
+```
+
+#### Card 2
+
+```text
+✓
+PROVE WITHOUT REVEALING
+
+Use zero-knowledge technology
+to prove the required claim.
+```
+
+#### Card 3
+
+```text
+🛡
+VERIFY ON MIDNIGHT
+
+Submit the required proof to
+the Midnight network.
+```
+
+Make sure the wording accurately reflects what the actual Level 1 contract does.
+
+Do not make unsupported privacy claims.
+
+---
+
+### PUBLIC VS PRIVATE VISUAL
+
+Add a simple visual explanation:
+
+```text
+             AFRIPASS
+                │
+       ┌────────┴────────┐
+       │                 │
+       ▼                 ▼
+   PRIVATE INPUT     PUBLIC RESULT
+       🔒                 ✓
+       │                  │
+       ▼                  ▼
+  ZK CIRCUIT         MIDNIGHT LEDGER
+       │
+       ▼
+    ZK PROOF
+```
+
+Include explanatory text:
+
+```text
+Private
+Your private input is used to construct the proof.
+
+Public
+Only the information intentionally committed
+to the Midnight ledger is public.
+```
+
+The exact wording must be consistent with the actual Compact contract.
+
+---
+
+════════════════════════════════════════
+STEP 2C — LIGHT & DARK MODE
+════════════════════════════════════════
+
+The frontend MUST support:
+
+```text
+Light Mode
+Dark Mode
+```
+
+Add a theme toggle to the application header.
 
 Example:
 
-```bash
-cd /path/to/afripass
+```text
+AfriPass                         ☀ / ☾    Connect Lace
 ```
 
-Confirm:
+Requirements:
 
-```bash
-pwd
-git status
-```
+* User can switch between light and dark mode.
+* Theme applies to the entire application.
+* Theme preference persists where practical.
+* Respect system preference when no preference has been selected.
+* Theme toggle has an accessible label.
+* Both themes must have good contrast.
+* Do not create separate applications for each theme.
 
-The AfriPass repository should become the actual Level 1 submission.
+If Tailwind CSS is used, use its supported dark-mode functionality.
 
 ---
 
-# REQUIRED LEVEL 1 STRUCTURE
+### LIGHT MODE
 
-Create or preserve:
+Light mode should feel:
 
 ```text
-afripass/
-│
-├── contracts/
-│   └── counter.compact
-│
-├── managed/
-│   └── generated by Compact compiler
-│
-├── src/
-│   └── reserved for Level 2 frontend
-│
-├── tests/
-│   └── counter.test.ts
-│
-├── .github/
-│   └── workflows/
-│       └── reserved for Level 3 CI/CD
-│
-├── README.md
-│
-├── package.json
-│
-└── .gitignore
+Clean
+Professional
+Trustworthy
+Financial
+Privacy-focused
 ```
 
-Do not manually fabricate the `managed/` directory.
-
-It must be generated by the Compact compiler.
-
 ---
 
-# ============================================================
+### DARK MODE
 
-# STEP 5 — DESIGN THE LEVEL 1 AFRIPASS CONTRACT
-
-# ============================================================
-
-Before writing code, explain the contract design in plain English.
-
-The contract should be a minimal demonstration of an AfriPass financial eligibility proof.
-
-The contract must contain:
-
-## A. PUBLIC LEDGER STATE
-
-At least one public ledger value.
-
-For example, an eligibility/result/status value.
-
-Do not expose sensitive financial information as public state.
-
-The public state should represent a result or intentionally public information.
-
----
-
-## B. PRIVATE WITNESS
-
-The circuit must accept at least one private input/witness.
-
-Use synthetic data.
-
-Example conceptual input:
+Dark mode should feel:
 
 ```text
-privateIncome
+Secure
+Private
+Modern
+Technical
+Premium
 ```
 
-Do not use real user financial information.
+The privacy visuals should remain clearly visible in both modes.
+
+Do not use excessive neon/glow effects.
 
 ---
 
-## C. PRIVACY-PRESERVING LOGIC
+════════════════════════════════════════
+STEP 3 — WALLET CONNECTION
+════════════════════════════════════════
 
-The circuit should perform a meaningful verification condition.
-
-Example concept:
+Build:
 
 ```text
-privateIncome >= requiredIncome
+src/components/WalletConnect.tsx
 ```
 
-The implementation must follow valid current Compact syntax.
+Requirements:
 
-Do not invent syntax.
+* Connect button triggers Lace wallet connection.
+* Disconnect button clears wallet state.
+* Connected wallet address appears on screen.
+* Clear disconnected state.
+* Handle wallet errors.
+
+The implementation MUST use the current supported Lace/Midnight DApp connector API.
+
+Do not invent API methods.
 
 ---
 
-## D. DELIBERATE disclose()
+### DISCONNECTED STATE
 
-Use `disclose()` deliberately.
-
-The code must make it clear:
+Display:
 
 ```text
-PRIVATE INPUT
-     ↓
-CIRCUIT
-     ↓
-VERIFICATION
-     ↓
-DISCLOSE ONLY INTENDED RESULT
+Wallet not connected
+
+[ Connect Lace ]
 ```
-
-Do not disclose the private financial value unnecessarily.
-
-The README must explain exactly what `disclose()` does in this implementation.
 
 ---
 
-# CONTRACT COMMENT BLOCK
+### CONNECTED STATE
 
-At the top of:
+Display:
 
 ```text
-contracts/counter.compact
+✓ Wallet Connected
+
+addr_test1...xxxx
+
+[ Disconnect ]
 ```
 
-include a clear comment explaining:
+The address may be truncated visually.
+
+---
+
+### ERROR HANDLING
+
+Handle:
+
+#### Wallet not installed
 
 ```text
-PUBLIC:
-- What ledger state is visible
-- What result is intentionally public
-
-PRIVATE:
-- What witness/input remains private
-- What financial information is synthetic/private
-
-PROOF:
-- What the user proves
-- What is intentionally disclosed
+Lace wallet not detected.
+Please install Lace to continue.
 ```
 
-Do not make false claims about privacy.
-
----
-
-# IMPORTANT COMPACT VERSION RULE
-
-Before writing the contract:
-
-1. Inspect the installed Compact compiler version.
-2. Check the current Compact syntax.
-3. Check current examples from official Midnight documentation.
-4. Confirm current ledger declaration syntax.
-5. Confirm current witness syntax.
-6. Confirm current circuit syntax.
-7. Confirm current `disclose()` syntax.
-8. Confirm current compile command.
-
-Only then write:
+#### User rejects connection
 
 ```text
-contracts/counter.compact
+Wallet connection was cancelled.
 ```
+
+#### Wrong network
+
+```text
+Wrong network detected.
+Please switch to Midnight Preprod.
+```
+
+#### Connection error
+
+Display a clear user-friendly error.
+
+Do not expose technical secrets or private inputs.
 
 ---
 
-# ============================================================
-
-# STEP 6 — COMPILE
-
-# ============================================================
-
-Compile:
-
-```bash
-compact compile
-```
-
-If the project requires a specific source/output configuration, use the current documented project command.
-
-Compilation must succeed.
-
-Verify:
-
-```bash
-ls -la managed
-find managed -maxdepth 3 -type f | sort
-```
-
-Confirm that generated circuit/key artifacts exist.
-
-Do not create fake files to satisfy the requirement.
-
-Capture a screenshot of the successful compile output showing the generated circuits/artifacts.
-
----
-
-# ============================================================
-
-# STEP 7 — TESTS
-
-# ============================================================
+════════════════════════════════════════
+STEP 4 — MIDNIGHT HOOK
+════════════════════════════════════════
 
 Create:
 
 ```text
-tests/counter.test.ts
+src/hooks/useMidnight.ts
 ```
 
-Write at least 3 meaningful tests.
+This hook should centralize Midnight interaction.
 
-## TEST 1 — Circuit Logic
-
-Test that the financial eligibility logic works.
-
-Example conceptual behavior:
+Conceptually it should provide functionality such as:
 
 ```text
-Income >= threshold → eligible
-Income < threshold → not eligible
+useMidnight()
+│
+├── wallet
+├── isConnected
+├── address
+├── connect()
+├── disconnect()
+├── contract
+├── callCircuit()
+├── transaction state
+└── error state
 ```
 
-Use synthetic values.
+Use the actual current Midnight.js APIs.
+
+Do not invent methods.
+
+Do not spread raw Midnight SDK logic unnecessarily throughout the components.
 
 ---
 
-## TEST 2 — State Transition
+════════════════════════════════════════
+STEP 4A — PRIVACY STATUS COMPONENT
+════════════════════════════════════════
 
-Test that the expected public ledger state changes correctly after a valid circuit invocation.
+Create:
+
+```text
+src/components/PrivacyStatus.tsx
+```
+
+It should communicate the current privacy state.
+
+Before proof:
+
+```text
+🔒 Privacy Protected
+
+Your private input is not displayed.
+```
+
+During proof generation:
+
+```text
+🔐 Generating Private Proof
+
+Your private input is being used
+to construct the proof.
+```
+
+After proof:
+
+```text
+✓ Proof Generated
+
+Proved without revealing your input.
+```
+
+After transaction:
+
+```text
+✓ Verified on Midnight Preprod
+
+Your proof was submitted successfully.
+```
+
+Do not display the actual private input.
 
 ---
 
-## TEST 3 — Privacy Behavior
+════════════════════════════════════════
+STEP 5 — CIRCUIT CALL
+════════════════════════════════════════
 
-Test the privacy boundary.
+Build:
 
-The test should demonstrate that:
+```text
+src/components/CircuitCall.tsx
+```
 
-* The private input is used by the circuit.
-* The private value is not intentionally stored as public ledger state.
-* Only the intended result/information is disclosed.
+The component must call a circuit from the **actual Level 1 AfriPass Preprod contract**.
 
-Do not write a meaningless test that simply checks a variable exists.
+First inspect:
+
+```text
+contracts/
+managed/
+```
+
+Determine the actual:
+
+* Contract name
+* Circuit name
+* Circuit arguments
+* Public state
+* Private witness
+* Generated API
+
+Do NOT assume the circuit is called `increment`.
+
+Use the actual circuit from the Level 1 AfriPass contract.
 
 ---
 
-# TEST REQUIREMENT
+### CIRCUIT UI
 
-Run the project's actual test command.
+Display a privacy-focused interface:
 
-Determine it from:
+```text
+Privacy Verification
+
+Prove your credential without
+unnecessarily revealing your input.
+
+[ Generate Private Proof ]
+
+🔒 Proved without revealing your input
+```
+
+---
+
+### PROOF GENERATION
+
+When the user clicks the button:
+
+```text
+Generating zero-knowledge proof...
+
+Your private input is not displayed.
+```
+
+Show a loading state.
+
+Disable duplicate submissions.
+
+---
+
+### ON-CHAIN RESULT
+
+After successful submission:
+
+```text
+✓ Proof Generated
+
+✓ Submitted to Midnight Preprod
+
+Proved without revealing your input.
+```
+
+Display the transaction identifier/hash if available.
+
+Do not display the private input.
+
+---
+
+════════════════════════════════════════
+STEP 5A — PRIVATE INPUT SECURITY
+════════════════════════════════════════
+
+Private inputs MUST NEVER be intentionally exposed in the UI.
+
+The private input must NOT be:
+
+* Displayed after submission.
+* Logged using `console.log`.
+* Added to URLs.
+* Stored in localStorage.
+* Stored in sessionStorage.
+* Sent to an unnecessary backend.
+* Sent to analytics.
+* Included in error messages.
+* Included in screenshots.
+* Added to transaction metadata unnecessarily.
+
+If an input field is required to demonstrate the circuit:
+
+* Mask the value.
+* Never display it after submission.
+* Never log it.
+* Never persist it.
+
+Example:
+
+```text
+Private credential
+
+[ •••••••••• ]
+
+🔒 This information remains private.
+```
+
+After proof:
+
+```text
+✓ Proof generated
+
+Private input:
+Protected 🔒
+```
+
+Never show the actual value.
+
+---
+
+════════════════════════════════════════
+STEP 5B — PRIVACY CLAIM
+════════════════════════════════════════
+
+The application must include a privacy explanation.
+
+Use a technically accurate statement such as:
+
+> AfriPass uses zero-knowledge technology to allow the required claim to be proven without directly revealing the private witness used to construct the proof.
+
+Before adding this claim, verify it against the actual Compact contract.
+
+Do NOT claim:
+
+* Absolute anonymity.
+* That all transaction information is private.
+* That the blockchain cannot see anything.
+* That AfriPass is a production KYC replacement.
+* That AfriPass is a regulated financial service.
+
+The claim must describe what the actual implementation demonstrates.
+
+---
+
+════════════════════════════════════════
+STEP 6 — DEPLOY FRONTEND
+════════════════════════════════════════
+
+Deploy the frontend using Vercel unless another deployment platform is already configured.
+
+Add:
+
+```text
+vercel.json
+```
+
+only if necessary.
+
+Provide the exact CLI commands required.
+
+For example, after verifying the current Vercel workflow:
 
 ```bash
-npm run
+npm install -g vercel
+vercel
+```
+
+Production deployment:
+
+```bash
+vercel --prod
+```
+
+Do not claim deployment succeeded until the real deployment URL is returned.
+
+---
+
+### IMPORTANT
+
+The live frontend MUST connect to:
+
+```text
+Midnight Preprod
 ```
 
 and:
 
 ```text
-package.json
+[LEVEL 1 PREPROD CONTRACT ADDRESS]
 ```
 
-Do not assume `npm test` if the generated project uses another command.
+Do not accidentally deploy the frontend configured for Preview.
 
-All tests must pass.
+Use environment variables where appropriate.
 
-Report:
+Provide:
 
 ```text
-Tests:
-Passed: X
-Failed: 0
+.env.example
 ```
+
+and ensure secrets are not committed.
 
 ---
 
-# ============================================================
+════════════════════════════════════════
+STEP 7 — README.md
+════════════════════════════════════════
 
-# STEP 8 — DEPLOY THE AFRIPASS LEVEL 1 CONTRACT
+Update the existing README.md.
 
-# ============================================================
+Do NOT delete useful Level 1 documentation.
 
-This is NOT the Hello World deployment.
-
-Deploy:
-
-```text
-contracts/counter.compact
-```
-
-to Preview or Preprod.
-
-Use the current official Midnight deployment workflow.
-
-If wallet funding is required:
-
-STOP and ask me to fund it.
-
-Do not fabricate deployment results.
-
-After deployment succeeds, report:
-
-```text
-AFRIPASS LEVEL 1 CONTRACT
-
-Network:
-Preview / Preprod
-
-Contract Address:
-<REAL CONTRACT ADDRESS>
-```
-
-Save this address for the README.
-
----
-
-# ============================================================
-
-# STEP 9 — README
-
-# ============================================================
-
-Create/update:
-
-```text
-README.md
-```
-
-The README must be about AfriPass.
-
-Use this structure:
+The README must contain ALL of these sections:
 
 # AfriPass
 
-> A privacy-preserving financial passport that enables users to prove selected financial credentials without unnecessarily exposing their underlying financial data.
+> A privacy-preserving financial passport that enables users to prove selected financial credentials without unnecessarily exposing their underlying private information.
 
-## Project Overview
-
-Explain AfriPass in plain English.
-
-Explain that Level 1 is the foundational privacy prototype.
-
----
-
-## Problem
-
-Explain:
-
-* Financial data is sensitive.
-* Users often disclose more information than necessary.
-* Financial credentials are fragmented.
-* Financial identity is difficult to carry between institutions.
-* AfriPass explores privacy-preserving financial verification.
-
----
-
-## Solution
-
-Explain that AfriPass aims to allow users to prove selected financial claims without exposing complete underlying records.
-
-Example:
+## Live Demo
 
 ```text
-Income > ₦300,000 ✓
+[PASTE LIVE URL AFTER DEPLOYING FRONTEND]
 ```
 
-instead of exposing every transaction.
-
----
-
-## Level 1 Objective
-
-Explain that Level 1 demonstrates:
-
-* Public ledger state
-* Private witness
-* Circuit logic
-* Selective disclosure
-* `disclose()`
-* ZK compilation
-* Generated circuits
-* Testing
-* Preview/Preprod deployment
+The real live URL must be added after deployment.
 
 ---
 
 ## Contract Address
 
-```markdown
-| Network | Address |
-|---|---|
-| Preview | [REAL ADDRESS AFTER DEPLOYMENT] |
-| Preprod | [REAL ADDRESS IF DEPLOYED] |
-```
+| Network | Address                         |
+| ------- | ------------------------------- |
+| Preprod | [CONTRACT ADDRESS FROM LEVEL 1] |
 
-Never invent an address.
+The contract address is MANDATORY.
+
+Do not leave it blank.
 
 ---
 
-## What This Contract Does
+## What This Does
 
-Explain the actual Level 1 contract.
+Explain in plain English what AfriPass does.
 
-Do not describe functionality that has not been implemented.
+Explain that the application allows users to interact with the deployed Midnight contract and demonstrate privacy-preserving verification.
 
 ---
 
 ## Privacy Model
 
+Explain:
+
 ### What is PUBLIC
 
-Describe the actual public ledger state.
+What information is visible on-chain.
 
 ### What is PRIVATE
 
-Describe the actual private witness.
+What remains a private witness/input.
 
-### What the User PROVES
+### What the user PROVES without revealing
 
-Describe exactly what the circuit proves.
-
-### What `disclose()` Does
-
-Explain the exact information deliberately disclosed.
+Explain the actual claim demonstrated by the Level 1 contract.
 
 ---
 
-## Why Midnight
+## Privacy Claim
 
-Explain why AfriPass requires:
+Include a specific statement describing:
 
-* Zero-knowledge proofs
-* Private computation
-* Selective disclosure
-* Public verifiability
+```text
+What an on-chain observer can see
+```
 
-Use Midnight documentation to verify technical claims.
+versus:
+
+```text
+What the observer cannot directly recover
+```
+
+The statement must be verified against the actual implementation.
 
 ---
 
 ## Tech Stack
 
+Include technologies actually used:
+
 ```text
 Midnight Network
 Compact
-Node.js v22
-npm
-Docker
-Midnight Proof Server
+Midnight.js SDK
+React
+Vite
 TypeScript
-Git/GitHub
+Lace Wallet
+Node.js v22
+Docker
 ```
-
-Only include technologies actually used.
 
 ---
 
 ## Prerequisites
 
-List:
-
-* Node.js v22
-* npm
-* Docker
-* Git
-* Compact compiler
-* Midnight proof server
-* Any additional dependencies actually required by the project
-
----
-
-## Setup
-
-Provide commands that actually work with the repository.
-
-Do not include commands that have not been tested.
-
----
-
-## Compile
-
-Show the actual compile command.
-
----
-
-## Run Tests
-
-Show the actual test command.
-
----
-
-## Deployment
-
-Explain how to deploy to Preview/Preprod.
-
-Do not expose wallet secrets.
-
----
-
-## Initial Idea
-
-Include:
-
-> AfriPass is a privacy-preserving financial passport for Africa that enables individuals and businesses to prove selected financial credentials, such as income eligibility, savings history, or repayment performance, without unnecessarily exposing their complete underlying financial records. The project uses Midnight's privacy-preserving capabilities to explore a more user-controlled model of financial verification where users can prove what is necessary while revealing less sensitive information.
-
----
-
-## Screenshots
-
-Include placeholders for:
-
-1. Successful Compact compilation
-2. Generated circuits/managed directory
-3. Passing tests
-4. Deployed contract address
-
----
-
-## Roadmap
-
-### Level 1
-
-* Toolchain
-* Compact contract
-* Private witness
-* Public state
-* `disclose()`
-* Tests
-* Deployment
-
-### Level 2
-
-* AfriPass financial passport
-* Frontend
-* Credential generation
-* Proof generation
-* Verifier interface
-
-### Level 3
-
-* CI/CD
-* Security improvements
-* Deployment automation
-* Monitoring
-
-### Future
-
-* Financial institution integrations
-* Cooperative credentials
-* Credit eligibility proofs
-* Business credentials
-* Cross-border financial credentials
-
----
-
-# ============================================================
-
-# STEP 10 — SECURITY
-
-# ============================================================
-
-Check `.gitignore`.
-
-Make sure the repository does NOT commit:
-
 ```text
-.env
-.env.*
-private keys
-wallet secrets
-mnemonic phrases
-credentials
-API secrets
+Lace wallet installed
+Node.js v22
+npm
+Midnight Preprod access
 ```
 
-Check:
+---
+
+## Run Locally
+
+Provide tested commands:
 
 ```bash
-git status
+git clone <repository-url>
+cd afripass
+npm install
+npm run dev
 ```
 
-Before committing, inspect staged files carefully.
-
----
-
-# ============================================================
-
-# STEP 11 — GIT COMMITS
-
-# ============================================================
-
-Create at least 5 meaningful commits.
-
-Recommended progression:
-
-```text
-1. Initialize AfriPass Midnight project
-2. Add Level 1 Compact privacy contract
-3. Add contract tests
-4. Add AfriPass privacy documentation
-5. Deploy Level 1 contract and update README
-```
-
-Use meaningful commit messages.
-
-Do not create five empty commits.
-
-Verify:
+If environment configuration is required:
 
 ```bash
-git log --oneline --decorate -n 10
+cp .env.example .env.local
 ```
+
+Then explain the required variables.
 
 ---
 
-# ============================================================
-
-# STEP 12 — FINAL VERIFICATION
-
-# ============================================================
-
-Before declaring Level 1 complete, independently verify every requirement.
-
-Run:
+## Build
 
 ```bash
-compact --version
-node --version
-docker info
-git status
-```
-
-Verify:
-
-```text
-contracts/counter.compact
-managed/
-tests/counter.test.ts
-README.md
-package.json
-```
-
-Verify:
-
-```text
-Contract compiles
-managed/ exists
-circuits generated
-keys generated
-3+ tests pass
-AfriPass contract deployed
-real contract address recorded
-README complete
-5+ meaningful commits
+npm run build
 ```
 
 ---
 
-# FINAL RISE IN CHECKLIST
-
-Print exactly this style of checklist:
+## Demo Video
 
 ```text
-LEVEL 1 — AFRIPASS
-
-[ ] Node.js v22 verified
-[ ] Docker verified
-[ ] Compact compiler installed
-[ ] Proof server running
-[ ] Midnight documentation access configured/verified
-[ ] Hello World scaffolded
-[ ] Hello World deployed
-[ ] AfriPass Level 1 project structure created
-[ ] Public ledger state implemented
-[ ] Private witness implemented
-[ ] Circuit implemented
-[ ] disclose() deliberately used
-[ ] Compact contract compiles
-[ ] managed/ directory generated
-[ ] Circuits generated
-[ ] Keys/generated artifacts present
-[ ] 3+ meaningful tests passing
-[ ] AfriPass Level 1 contract deployed
-[ ] Contract address recorded
-[ ] README completed
-[ ] Privacy model documented
-[ ] Initial AfriPass idea documented
-[ ] Compilation screenshot captured
-[ ] Deployment screenshot captured
-[ ] Public GitHub repository
-[ ] 5+ meaningful commits
+[PLACEHOLDER — I WILL ADD THE LINK AFTER RECORDING]
 ```
 
-For each item, mark:
+---
+
+## Privacy Design
+
+Document the visual privacy features:
+
+* Privacy-first hero section.
+* Private/public visual explanation.
+* Privacy status component.
+* Privacy-focused imagery.
+* Light mode.
+* Dark mode.
+* Privacy messaging.
+
+---
+
+════════════════════════════════════════
+STEP 8 — DEMO VIDEO CHECKLIST
+════════════════════════════════════════
+
+Tell me exactly what to record in a demo video under 2 minutes.
+
+### 1. Connect Lace
+
+Show:
+
+```text
+Connect Lace
+```
+
+Then show the wallet address appearing.
+
+---
+
+### 2. Call the Circuit
+
+Show the privacy verification screen.
+
+Click:
+
+```text
+Generate Private Proof
+```
+
+Show:
+
+```text
+Generating zero-knowledge proof...
+```
+
+Do NOT show the private input.
+
+---
+
+### 3. Show Result
+
+Show:
+
+```text
+✓ Proof Generated
+✓ Submitted to Midnight Preprod
+```
+
+Show the transaction result/ID if available.
+
+---
+
+### 4. Explain Privacy
+
+Point to:
+
+```text
+Proved without revealing your input
+```
+
+Explain briefly that the proof demonstrates the required claim without exposing the underlying private witness.
+
+---
+
+### 5. Show Dark Mode
+
+Briefly switch:
+
+```text
+Light Mode → Dark Mode
+```
+
+Show that the privacy-focused UI works in both themes.
+
+---
+
+════════════════════════════════════════
+STEP 9 — FINAL CHECKLIST
+════════════════════════════════════════
+
+Print ✓ or ✗ for each requirement:
+
+```text
+[ ] Lace wallet connect working
+[ ] Lace wallet disconnect working
+[ ] Wallet address displayed
+[ ] Wallet-not-installed error handled
+[ ] User-rejected connection handled
+[ ] Wrong-network error handled
+[ ] Preprod network configured
+[ ] Actual Level 1 Preprod contract connected
+[ ] Circuit called from frontend
+[ ] Proof generated locally
+[ ] Loading state shown during proof generation
+[ ] Transaction submitted on-chain
+[ ] Transaction result displayed
+[ ] Private input never intentionally displayed
+[ ] Private input never logged
+[ ] Private input not stored in localStorage
+[ ] Private input not stored in sessionStorage
+[ ] Private input not exposed through URL
+[ ] Privacy Status component implemented
+[ ] Privacy Claim section implemented
+[ ] Privacy-focused images/visuals added
+[ ] Public vs private explanation added
+[ ] Light mode working
+[ ] Dark mode working
+[ ] Theme toggle working
+[ ] Responsive design working
+[ ] Frontend builds successfully
+[ ] TypeScript passes
+[ ] Live frontend deployed
+[ ] Live URL connects to Preprod
+[ ] Contract address in README.md
+[ ] Live demo link in README.md
+[ ] Privacy Claim section in README.md
+[ ] File structure matches specification
+[ ] Demo video recorded
+```
+
+Use:
 
 ```text
 ✓ COMPLETE
@@ -1175,96 +1061,149 @@ For each item, mark:
 ⚠ BLOCKED
 ```
 
-Never mark something complete without evidence.
+Never mark an item complete without actually testing it.
 
 ---
 
-# FINAL OUTPUT
+════════════════════════════════════════
+FINAL REPORT
+════════════════════════════════════════
 
-At the end, provide:
+At the end provide:
 
-## 1. Project Status
+## Level 2 Status
 
 ```text
-AfriPass Level 1:
 COMPLETE / IN PROGRESS / BLOCKED
 ```
 
-## 2. Contract
+## Preprod Contract
 
 ```text
 Network:
-Contract Address:
+Preprod
+
+Contract:
+<REAL CONTRACT ADDRESS>
 ```
 
-## 3. Tests
+## Frontend
 
 ```text
-Passed:
-Failed:
+Local:
+<LOCAL URL>
+
+Production:
+<REAL LIVE URL>
 ```
 
-## 4. Git
+## Wallet
 
 ```text
-Commit count:
-Repository status:
+Lace:
+CONNECTED / NOT TESTED / BLOCKED
 ```
 
-## 5. Remaining Actions
+## Circuit
 
-List only actions that I personally need to perform, such as:
+```text
+Circuit:
+<ACTUAL CIRCUIT NAME>
 
-* Fund Preview wallet
-* Add screenshots
-* Push to GitHub
-* Submit to Rise In
+Proof:
+LOCAL / NOT WORKING / BLOCKED
+```
 
-Do not tell me something is complete when it has not actually been completed.
+## Transaction
+
+```text
+Status:
+SUCCESS / FAILED / NOT TESTED
+
+Transaction:
+<REAL TRANSACTION ID IF AVAILABLE>
+```
+
+## Build
+
+```text
+Build:
+PASS / FAIL
+
+TypeScript:
+PASS / FAIL
+```
+
+## Git
+
+```text
+Changes committed:
+YES / NO
+
+Changes pushed:
+YES / NO
+```
+
+## Remaining Actions
+
+Only list actions I personally need to perform.
+
+Examples:
+
+```text
+- Record demo video
+- Add demo video URL
+- Push final commit
+- Submit Level 2 on Rise In
+```
 
 ---
 
-# CORE PRINCIPLE
+# MOST IMPORTANT LEVEL 2 PRINCIPLE
 
-The Level 1 contract is deliberately small.
+Do not turn AfriPass into a generic blockchain dashboard.
 
-The objective is NOT to build the entire AfriPass financial platform.
-
-The objective is to establish a technically correct Midnight privacy foundation that can evolve into AfriPass.
-
-The architecture should communicate this:
+The purpose of Level 2 is to demonstrate:
 
 ```text
                  AFRIPASS
                     │
                     ▼
-          Privacy-Preserving
-          Financial Credentials
+               LACE WALLET
                     │
                     ▼
-              Midnight
-                    │
-        ┌───────────┴───────────┐
-        │                       │
-   PRIVATE DATA            PUBLIC PROOF
-        │                       │
-        └───────────┬───────────┘
-                    ▼
-             SELECTIVE
-             DISCLOSURE
+            PRIVATE INPUT
                     │
                     ▼
-              VERIFIER
+             MIDNIGHT.JS
+                    │
+                    ▼
+        LOCAL ZK PROOF GENERATION
+                    │
+                    ▼
+           MIDNIGHT PREPROD
+                    │
+                    ▼
+             VERIFIED RESULT
 ```
 
-Build Level 1 correctly, keep the implementation understandable, and leave the architecture extensible for Level 2.
+The user experience should communicate:
 
-Do not over-engineer Level 1.
-Do not build the frontend yet.
-Do not integrate real banks yet.
-Do not use real financial information yet.
-Do not build lending functionality yet.
+> **Prove what matters. Keep what matters private.**
 
-The goal is:
+The application should visually and technically demonstrate that principle.
 
-> **Build the smallest technically correct Midnight privacy prototype that establishes the foundation for AfriPass.**
+Do not over-engineer Level 2.
+
+Prioritize:
+
+1. Working Lace connection.
+2. Working Midnight.js integration.
+3. Working circuit call.
+4. Local proof generation.
+5. Successful Preprod transaction.
+6. Privacy-preserving UX.
+7. Light/dark mode.
+8. Privacy-focused imagery.
+9. Professional AfriPass presentation.
+10. Complete Rise In requirements.
