@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Wallet, LogOut, CheckCircle2, AlertTriangle, ExternalLink, ShieldCheck } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Wallet, LogOut, CheckCircle2, AlertTriangle, ExternalLink, X } from 'lucide-react';
 
 interface WalletConnectProps {
   isConnected: boolean;
@@ -22,102 +22,88 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
   onConnect,
   onDisconnect,
 }) => {
+  const [displayError, setDisplayError] = useState<string | null>(null);
+
+  // Auto-dismiss error alert after 10 seconds (10,000ms)
+  useEffect(() => {
+    if (error) {
+      setDisplayError(error);
+      const timer = setTimeout(() => {
+        setDisplayError(null);
+      }, 10000);
+
+      return () => clearTimeout(timer);
+    } else {
+      setDisplayError(null);
+    }
+  }, [error]);
+
+  const handleDismissError = () => {
+    setDisplayError(null);
+  };
+
   // Truncate wallet address for clean UI presentation
   const truncatedAddress = address
     ? `${address.slice(0, 10)}...${address.slice(-6)}`
     : null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+    <div className="relative">
       {/* Header Button Mode / Card View */}
       {isConnected ? (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem',
-          backgroundColor: 'var(--bg-surface)',
-          border: '1px solid var(--badge-border)',
-          borderRadius: '0.75rem',
-          padding: '0.5rem 0.85rem'
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            color: 'var(--badge-text)',
-            fontSize: '0.875rem',
-            fontWeight: 600
-          }}>
-            <CheckCircle2 style={{ width: '1.1rem', height: '1.1rem' }} />
+        <div className="flex items-center gap-3 bg-[var(--bg-surface)] border border-[var(--badge-border)] rounded-xl px-3.5 py-2">
+          <div className="flex items-center gap-2 text-[var(--badge-text)] text-sm font-semibold">
+            <CheckCircle2 className="w-4 h-4" />
             <span>Connected</span>
           </div>
 
-          <div style={{
-            fontFamily: 'monospace',
-            fontSize: '0.85rem',
-            backgroundColor: 'var(--bg-card)',
-            padding: '0.25rem 0.6rem',
-            borderRadius: '0.4rem',
-            border: '1px solid var(--border-color)',
-            color: 'var(--text-primary)'
-          }}>
+          <div className="font-mono text-xs bg-[var(--bg-card)] px-2.5 py-1 rounded-md border border-[var(--border-color)] text-[var(--text-primary)]">
             {truncatedAddress}
           </div>
 
           <button
             onClick={onDisconnect}
-            className="btn btn-secondary"
-            style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem', height: 'auto' }}
-            title="Disconnect Lace Wallet"
+            className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 h-auto rounded-lg font-bold text-xs cursor-pointer border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] hover:border-slate-400 dark:hover:border-slate-500 transition-colors shadow-sm"
+            title="Disconnect Midnight Wallet"
           >
-            <LogOut style={{ width: '0.9rem', height: '0.9rem' }} /> Disconnect
+            <LogOut className="w-3.5 h-3.5" /> Disconnect
           </button>
         </div>
       ) : (
         <button
           onClick={onConnect}
-          className="btn btn-primary"
-          style={{ gap: '0.5rem' }}
+          className="inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl font-bold text-sm sm:text-base cursor-pointer border-0 text-white bg-gradient-to-br from-[var(--primary-emerald)] to-[var(--emerald-hover)] hover:brightness-105 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] dark:hover:shadow-[0_0_25px_rgba(16,185,129,0.25)] transition-all shadow-sm shrink-0"
         >
-          <Wallet style={{ width: '1.25rem', height: '1.25rem' }} /> Connect Lace
+          <Wallet className="w-4 h-4 sm:w-5 sm:h-5" /> Connect Midnight Wallet
         </button>
       )}
 
-      {/* Error Alert Displays */}
-      {error && (
-        <div style={{
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
-          border: '1px solid rgba(239, 68, 68, 0.3)',
-          borderRadius: '0.625rem',
-          padding: '0.75rem 1rem',
-          color: '#ef4444',
-          fontSize: '0.875rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.6rem',
-          maxWidth: '420px'
-        }}>
-          <AlertTriangle style={{ width: '1.25rem', height: '1.25rem', flexShrink: 0 }} />
-          <div>
-            <span>{error}</span>
+      {/* Floating Error Alert Dropdown (Auto-dismisses in 10s) */}
+      {displayError && (
+        <div className="absolute top-full right-0 mt-2.5 z-50 w-72 sm:w-96 bg-[var(--bg-card)] border border-red-500/40 rounded-xl p-3.5 text-red-500 text-xs sm:text-sm flex items-start gap-3 shadow-2xl backdrop-blur-lg">
+          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-red-500" />
+          <div className="flex-1 pr-1">
+            <span>{displayError}</span>
             {!isLaceInstalled && (
-              <a
-                href="https://www.lace.io/"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.25rem',
-                  color: 'var(--accent-cyan)',
-                  marginLeft: '0.5rem',
-                  fontWeight: 600
-                }}
-              >
-                Get Lace <ExternalLink style={{ width: '0.8rem', height: '0.8rem' }} />
-              </a>
+              <div className="mt-1.5">
+                <a
+                  href="https://www.lace.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[var(--accent-cyan)] font-semibold hover:underline"
+                >
+                  Get Midnight Lace Wallet <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
             )}
           </div>
+          <button
+            onClick={handleDismissError}
+            className="text-[var(--text-muted)] hover:text-red-500 p-0.5 rounded-md cursor-pointer transition-colors shrink-0"
+            title="Dismiss notification"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
     </div>
