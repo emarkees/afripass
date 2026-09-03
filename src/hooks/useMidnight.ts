@@ -14,19 +14,35 @@ export interface MidnightState {
 
 declare global {
   interface Window {
-    midnight?: {
-      mnLace?: {
-        enable: () => Promise<any>;
-        isEnabled: () => Promise<boolean>;
-        name: string;
-        icon: string;
-        apiVersion: string;
-      };
-    };
+    midnight?: Record<string, any>;
   }
 }
 
 const PREPROD_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '2315129c322aba100c4c550157b64e94fd917547b73df1bc1bac867b88cd0400';
+const MIDNIGHT_NETWORK_ID = 'Undeployed';
+
+/**
+ * Discover all Midnight-compatible wallet providers injected into window.midnight.
+ * Lace (and other wallets) inject under unique UUID keys, NOT hardcoded names.
+ * We enumerate all keys and return providers that have the expected API shape.
+ */
+const discoverMidnightProviders = (): Array<{ key: string; provider: any }> => {
+  if (typeof window === 'undefined' || !window.midnight) return [];
+
+  return Object.entries(window.midnight)
+    .filter(([_, provider]) => {
+      return provider && typeof provider === 'object' && typeof provider.name === 'string';
+    })
+    .map(([key, provider]) => ({ key, provider }));
+};
+
+/**
+ * Get the first available Midnight wallet provider.
+ */
+const getFirstProvider = (): any | null => {
+  const providers = discoverMidnightProviders();
+  return providers.length > 0 ? providers[0].provider : null;
+};
 
 export function useMidnight() {
   const [state, setState] = useState<MidnightState>({
@@ -39,60 +55,129 @@ export function useMidnight() {
     lastCounter: 1,
   });
 
-  // Check if Lace wallet is installed
-  const isLaceInstalled = typeof window !== 'undefined' && Boolean(window.midnight?.mnLace);
+  const [isWalletDetected, setIsWalletDetected] = useState<boolean>(false);
 
-  // Connect to Lace wallet
+  // Poll for Midnight wallet extension injection (extensions load asynchronously)
+  useEffect(() => {
+    const checkWallet = () => {
+      const provider = getFirstProvider();
+      setIsWalletDetected(Boolean(provider));
+    };
+
+    checkWallet();
+    const interval = setInterval(checkWallet, 500);
+    window.addEventListener('focus', checkWallet);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', checkWallet);
+    };
+  }, []);
+
+  /**
+   * Connect to the Midnight account on the Lace extension.
+   * Calls provider.enable() or provider.connect() which triggers the Lace
+   * extension popup asking the user to approve the dApp connection.
+   */
   const connect = useCallback(async () => {
     setState((prev) => ({ ...prev, error: null }));
 
-    if (!isLaceInstalled) {
+    const provider = getFirstProvider();
+
+    if (!provider) {
+      // Debug: log what's actually in window.midnight
+      const midnightKeys = typeof window !== 'undefined' && window.midnight
+        ? Object.keys(window.midnight)
+        : [];
+
+      console.warn('[AfriPass] window.midnight keys:', midnightKeys);
+
       setState((prev) => ({
         ...prev,
-        error: 'Lace wallet not detected. Please install Lace extension to continue.',
+        error: `Midnight wallet not found. Please ensure you have the Lace extension installed with a Midnight account enabled, then refresh the page. (Detected providers: ${midnightKeys.length})`,
       }));
       return;
     }
 
+    console.log('[AfriPass] Connecting to Midnight provider:', provider.name || 'unknown');
+
     try {
-      const lace = window.midnight!.mnLace!;
-      const api = await lace.enable();
+      let api: any;
 
-      let userAddress: string | null = null;
-
-      if (api.state) {
-        const walletState = await api.state();
-        userAddress = walletState.address || walletState.coinPublicKey || walletState.unshieldedAddress;
+      // The Midnight DApp Connector API uses .enable() to prompt the extension
+      if (typeof provider.enable === 'function') {
+        api = await provider.enable();
+      } else if (typeof provider.connect === 'function') {
+        api = await provider.connect(MIDNIGHT_NETWORK_ID);
+      } else {
+        setState((prev) => ({
+          ...prev,
+          error: 'Wallet provider found but does not expose enable() or connect(). Please update your Lace extension.',
+        }));
+        return;
       }
 
-      if (!userAddress && api.getUnshieldedAddress) {
+      // Extract the wallet address from the connected API
+      let userAddress: string | null = null;
+
+      if (typeof api.state === 'function') {
+        const walletState = await api.state();
+        userAddress =
+          walletState?.address ||
+          walletState?.coinPublicKey ||
+          walletState?.unshieldedAddress ||
+          null;
+      }
+
+      if (!userAddress && typeof api.getUnshieldedAddress === 'function') {
         userAddress = await api.getUnshieldedAddress();
       }
 
-      // Fallback synthetic address for demonstration if API returns raw key
-      if (!userAddress) {
-        userAddress = 'addr_test1q8afripass_preprod_987x456c123z';
+      if (!userAddress && typeof api.getAddress === 'function') {
+        userAddress = await api.getAddress();
       }
 
-      // Validate network check
-      const currentNetwork = 'preprod';
+      if (!userAddress && api.address) {
+        userAddress = api.address;
+      }
+
+      if (!userAddress) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Connected to Lace but could not retrieve your Midnight address. Please ensure you have a Midnight account configured.',
+        }));
+        return;
+      }
 
       setState((prev) => ({
         ...prev,
         isConnected: true,
         address: userAddress,
-        networkId: currentNetwork,
+        networkId: 'preprod',
         error: null,
       }));
     } catch (err: any) {
-      console.error('Wallet connection error:', err);
-      if (err?.message?.includes('user') || err?.message?.includes('cancel') || err?.code === 4001) {
-        setState((prev) => ({ ...prev, error: 'Wallet connection was cancelled by user.' }));
+      console.error('[AfriPass] Midnight wallet connection error:', err);
+
+      if (
+        err?.message?.includes('user') ||
+        err?.message?.includes('cancel') ||
+        err?.message?.includes('denied') ||
+        err?.message?.includes('reject') ||
+        err?.code === 4001
+      ) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Connection request was declined. Please approve the connection in your Lace extension.',
+        }));
       } else {
-        setState((prev) => ({ ...prev, error: err?.message || 'Failed to connect Lace wallet.' }));
+        setState((prev) => ({
+          ...prev,
+          error: err?.message || 'Failed to connect to Midnight wallet via Lace.',
+        }));
       }
     }
-  }, [isLaceInstalled]);
+  }, []);
 
   // Disconnect wallet
   const disconnect = useCallback(() => {
@@ -110,7 +195,7 @@ export function useMidnight() {
   // Execute circuit call increment_counter(step)
   const callCircuit = useCallback(async (stepAmount: number) => {
     if (!state.isConnected) {
-      setState((prev) => ({ ...prev, error: 'Please connect your Lace wallet first.' }));
+      setState((prev) => ({ ...prev, error: 'Please connect your Midnight wallet first.' }));
       return;
     }
 
@@ -122,18 +207,16 @@ export function useMidnight() {
     }));
 
     try {
-      // Simulate local ZK proof generation time (1.5s)
+      // Simulate local ZK proof generation time (1.8s)
       await new Promise((resolve) => setTimeout(resolve, 1800));
 
       setState((prev) => ({ ...prev, proofState: 'submitting' }));
 
-      // Simulate ledger transaction submission to Preprod contract
+      // Simulate ledger transaction submission to Preprod contract (1.5s)
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // Generate realistic transaction identifier hash
       const randomTxHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
 
-      // IMPORTANT: Private witness (stepAmount) is NEVER logged or retained in state!
       setState((prev) => ({
         ...prev,
         proofState: 'success',
@@ -153,7 +236,7 @@ export function useMidnight() {
 
   return {
     ...state,
-    isLaceInstalled,
+    isLaceInstalled: isWalletDetected,
     connect,
     disconnect,
     callCircuit,
