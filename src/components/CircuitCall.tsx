@@ -46,141 +46,95 @@ export const CircuitCall: React.FC<CircuitCallProps> = ({
   };
 
   return (
-    <div id="verify" className="visual-section" style={{ maxWidth: '800px', margin: '3rem auto' }}>
-      <div className="section-header">
-        <span className="privacy-badge">
-          <ShieldCheck style={{ width: '1rem', height: '1rem' }} /> Privacy Verification Circuit
+    <div id="verify" className="w-full bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[1.25rem] p-6 sm:p-10 my-12 shadow-md max-w-4xl mx-auto">
+      <div className="text-center mb-8">
+        <span className="inline-flex items-center gap-2 py-1 px-4 rounded-full bg-[var(--badge-bg)] border border-[var(--badge-border)] text-[var(--badge-text)] text-sm font-semibold mb-3">
+          <ShieldCheck className="w-4 h-4" /> Privacy Verification Circuit
         </span>
-        <h3 className="section-title">Verify Credentials Privately</h3>
-        <p className="section-subtitle">
+        <h3 className="text-2xl sm:text-3xl font-bold mb-2">Verify Credentials Privately</h3>
+        <p className="text-[var(--text-secondary)] text-sm sm:text-base">
           Execute the local ZK circuit to prove financial eligibility on the Midnight Preprod contract without exposing your private input.
         </p>
       </div>
 
       {/* Contract & State Metadata Header */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '1rem',
-        marginBottom: '2rem'
-      }}>
-        <div style={{
-          backgroundColor: 'var(--bg-surface)',
-          border: '1px solid var(--border-color)',
-          borderRadius: '0.75rem',
-          padding: '1rem'
-        }}>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>PREPROD CONTRACT</div>
-          <div style={{ fontFamily: 'monospace', fontSize: '0.8rem', fontWeight: 600, wordBreak: 'break-all', marginTop: '0.25rem', color: 'var(--primary-emerald)' }}>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 w-full">
+        <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl p-4 flex flex-col justify-between">
+          <div className="text-[0.75rem] text-[var(--text-muted)] font-semibold uppercase tracking-wider">PREPROD CONTRACT</div>
+          <div className="font-mono text-xs font-semibold break-all mt-1 text-[var(--primary-emerald)]">
             {contractAddress.slice(0, 14)}...{contractAddress.slice(-10)}
           </div>
         </div>
 
-        <div style={{
-          backgroundColor: 'var(--bg-surface)',
-          border: '1px solid var(--border-color)',
-          borderRadius: '0.75rem',
-          padding: '1rem'
-        }}>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>CIRCUIT NAME</div>
-          <div style={{ fontFamily: 'monospace', fontSize: '0.9rem', fontWeight: 700, marginTop: '0.25rem', color: 'var(--accent-indigo)' }}>
+        <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl p-4 flex flex-col justify-between">
+          <div className="text-[0.75rem] text-[var(--text-muted)] font-semibold uppercase tracking-wider">CIRCUIT NAME</div>
+          <div className="font-mono text-sm font-bold mt-1 text-[var(--accent-indigo)]">
             increment_counter(step)
           </div>
         </div>
 
-        <div style={{
-          backgroundColor: 'var(--bg-surface)',
-          border: '1px solid var(--border-color)',
-          borderRadius: '0.75rem',
-          padding: '1rem'
-        }}>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>PUBLIC VERIFIED CLAIM COUNTER</div>
-          <div style={{ fontFamily: 'monospace', fontSize: '1.2rem', fontWeight: 800, color: 'var(--badge-text)', marginTop: '0.1rem' }}>
+        <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl p-4 flex flex-col justify-between">
+          <div className="text-[0.75rem] text-[var(--text-muted)] font-semibold uppercase tracking-wider">PUBLIC VERIFIED CLAIM COUNTER</div>
+          <div className="font-mono text-xl font-extrabold text-[var(--badge-text)] mt-0.5">
             {lastCounter}
           </div>
         </div>
       </div>
 
       {/* Form Card */}
-      <form onSubmit={handleSubmit} style={{
-        backgroundColor: 'var(--bg-surface)',
-        border: '1px solid var(--border-color)',
-        borderRadius: '1rem',
-        padding: '2rem',
-        boxShadow: 'var(--shadow-md)'
-      }}>
-        <div className="form-group">
-          <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <form onSubmit={handleSubmit} className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl p-8 shadow-md">
+        <div className="flex flex-col gap-2 text-left mb-5">
+          <label className="text-sm font-semibold text-[var(--text-secondary)] flex justify-between items-center">
             <span>Private Witness Credential (Synthetic Monthly Income - NGN)</span>
             <button
               type="button"
               onClick={() => setShowMasked(!showMasked)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--text-muted)',
-                fontSize: '0.8rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.25rem'
-              }}
+              className="bg-transparent border-0 text-[var(--text-muted)] text-xs cursor-pointer flex items-center gap-1 hover:text-[var(--text-primary)] transition-colors"
             >
-              {showMasked ? <EyeOff style={{ width: '0.9rem', height: '0.9rem' }} /> : <Eye style={{ width: '0.9rem', height: '0.9rem' }} />}
+              {showMasked ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               {showMasked ? 'Masked 🔒' : 'Show Value'}
             </button>
           </label>
 
-          <div style={{ position: 'relative' }}>
+          <div className="relative">
             <input
               type={showMasked ? 'password' : 'text'}
               value={stepInput}
               onChange={(e) => setStepInput(e.target.value)}
               disabled={proofState === 'generating' || proofState === 'submitting'}
-              className="form-input"
+              className="w-full py-3.5 px-4 rounded-xl bg-[var(--bg-input)] border border-[var(--border-color)] text-[var(--text-primary)] text-base focus:outline-none focus:border-[var(--primary-emerald)] focus:ring-3 focus:ring-[rgba(16,185,129,0.15)] transition-all"
               placeholder="e.g. 350000"
               required
             />
-            <div style={{
-              position: 'absolute',
-              right: '1rem',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              fontSize: '0.8rem',
-              color: 'var(--text-muted)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.25rem'
-            }}>
-              <Lock style={{ width: '0.85rem', height: '0.85rem', color: 'var(--primary-emerald)' }} /> Private Input
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[var(--text-muted)] flex items-center gap-1 pointer-events-none">
+              <Lock className="w-3.5 h-3.5 text-[var(--primary-emerald)]" /> Private Input
             </div>
           </div>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+          <p className="text-xs text-[var(--text-muted)] mt-1.5">
             🔒 This information remains strictly private on your device. It is never transmitted unencrypted to verifiers.
           </p>
         </div>
 
         <PrivacyStatus proofState={proofState} txHash={txHash} />
 
-        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+        <div className="mt-6 text-center">
           {!isConnected ? (
-            <button type="button" onClick={onConnect} className="btn btn-primary" style={{ width: '100%', padding: '1rem' }}>
+            <button type="button" onClick={onConnect} className="w-full py-4 px-7 rounded-xl font-bold text-base cursor-pointer border-0 text-white bg-gradient-to-br from-[var(--primary-emerald)] to-[var(--emerald-hover)] hover:brightness-105 transition-all shadow-sm">
               Connect Lace Wallet to Verify
             </button>
           ) : (
             <button
               type="submit"
               disabled={proofState === 'generating' || proofState === 'submitting'}
-              className="btn btn-primary"
-              style={{ width: '100%', padding: '1rem', gap: '0.5rem' }}
+              className="w-full py-4 px-7 rounded-xl font-bold text-base cursor-pointer border-0 text-white bg-gradient-to-br from-[var(--primary-emerald)] to-[var(--emerald-hover)] hover:brightness-105 transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {proofState === 'generating' || proofState === 'submitting' ? (
                 <>
-                  <Cpu className="animate-spin" style={{ width: '1.25rem', height: '1.25rem' }} /> Generating ZK Proof...
+                  <Cpu className="animate-spin w-5 h-5" /> Generating ZK Proof...
                 </>
               ) : (
                 <>
-                  <Sparkles style={{ width: '1.25rem', height: '1.25rem' }} /> Generate Private Proof
+                  <Sparkles className="w-5 h-5" /> Generate Private Proof
                 </>
               )}
             </button>
@@ -189,19 +143,8 @@ export const CircuitCall: React.FC<CircuitCallProps> = ({
       </form>
 
       {/* Security Guarantee Notice */}
-      <div style={{
-        marginTop: '1.75rem',
-        padding: '1rem 1.25rem',
-        backgroundColor: 'var(--badge-bg)',
-        border: '1px solid var(--badge-border)',
-        borderRadius: '0.75rem',
-        fontSize: '0.85rem',
-        color: 'var(--badge-text)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem'
-      }}>
-        <Lock style={{ width: '1.25rem', height: '1.25rem', flexShrink: 0 }} />
+      <div className="mt-7 p-4 bg-[var(--badge-bg)] border border-[var(--badge-border)] rounded-xl text-xs text-[var(--badge-text)] flex items-center gap-3">
+        <Lock className="w-5 h-5 shrink-0" />
         <div>
           <strong>Privacy Security Guarantee:</strong> AfriPass uses zero-knowledge technology to allow the required claim to be proven without directly revealing the private witness used to construct the proof.
         </div>
