@@ -1,10 +1,11 @@
 # AfriPass — Verified Financial Credentials & Privacy-Preserving Proofs
 
-> A privacy-preserving financial passport enabling trusted institutions to attest to financial credentials, then leveraging Midnight zero-knowledge technology to let users prove eligibility without exposing underlying bank records.
+> A privacy-preserving financial credential and verification infrastructure network enabling trusted institutions to attest to financial credentials, then leveraging Midnight zero-knowledge technology to let users prove eligibility without exposing underlying bank records.
 
-## Live Demo
+## Live Demo & Deployment
 
-https://afripass.vercel.app
+- **Live Web Application**: [https://afripass-three.vercel.app](https://afripass-three.vercel.app)
+- **Go REST Backend Server**: `http://localhost:8080` (Dockerized Go 1.22+)
 
 ## Contract Address
 
@@ -12,20 +13,60 @@ https://afripass.vercel.app
 |----------|----------------------------------|
 | Preprod  | `2315129c322aba100c4c550157b64e94fd917547b73df1bc1bac867b88cd0400` |
 
-## What This Does
+---
 
-AfriPass is a privacy-first financial passport dApp built on the Midnight Network. Across Africa, individuals and micro-enterprises face severe friction when applying for financial services because lenders demand raw bank statements, tax IDs, and sensitive transaction logs.
+## Architecture Overview
 
-AfriPass bridges financial institutions and lenders through a 4-layer trust stack:
-`Trusted Issuer ➔ Attested Credential ➔ Midnight ZK Proof ➔ Verifier`
+AfriPass connects **Users**, **Financial-Service Providers**, **Credential Issuers**, and **Verifiers** through a multi-tenant platform:
 
-Users connect their Lace wallet, select an attested financial credential (such as monthly income or credit score) issued by a verified institution, execute a local zero-knowledge circuit, generate a ZK proof locally on their device, and submit the verification proof directly to the Midnight Preprod network without ever exposing their raw financial data or bank statements.
+```text
+Trusted Financial Provider
+        ↓
+Provider Attestation (HMAC-SHA256)
+        ↓
+AfriPass Credential
+        ↓
+User Financial Passport
+        ↓
+User Consent & Request Center
+        ↓
+Midnight ZK Proof (Compact Circuit)
+        ↓
+Verification Session / QR Code
+        ↓
+Verifier (Minimum Disclosure)
+```
+
+Core product principle: **VERIFY MORE. REVEAL LESS.**
+
+---
+
+## System Capabilities
+
+### 1. Multi-Tenant Provider Network
+- **Tenant Isolation**: Every financial service provider operates inside an isolated organization context.
+- **Role-Based Access Control (RBAC)**: Support for `OWNER`, `ADMIN`, `ISSUER`, `VERIFIER`, `DEVELOPER`, and `AUDITOR` permissions.
+- **Provider Roles**: Distinguishes between Credential Issuers, Proof Verifiers, and combined institutions.
+
+### 2. Go Backend REST API (`backend/`)
+- Built in Go 1.22+ featuring PostgreSQL schema, CORS security middleware, HMAC-SHA256 institutional attestations, and structured JSON responses.
+- Endpoints for auth (`/api/v1/auth/login`), onboarding (`/api/v1/providers/register`), credentials (`/api/v1/credentials`), team management (`/api/v1/provider/members`), ZK verification (`/api/v1/proofs/verify`), API keys (`/api/v1/provider/api-keys`), audit logging (`/api/v1/provider/audit`), and SaaS subscriptions (`/api/v1/provider/subscription`).
+
+### 3. User Consent & Verification Center
+- Explicit consent modals preventing automatic disclosure of financial records.
+- Verifier requests specify required threshold and purpose (e.g. Monthly Income ≥ ₦1,000,000 for Loan Application).
+
+### 4. SaaS Subscription & API Platform
+- Configurable API quotas (`Sandbox`, `Starter`, `Professional`, `Enterprise`).
+- Scoped API key management and real-time developer webhooks (`credential.issued`, `credential.revoked`, `verification.completed`, `proof.verified`).
+
+---
 
 ## Privacy Model
 
-- What is PUBLIC: The verified on-chain claim counter (`counter`), contract address, transaction proof verification result, attesting institution status, and network metadata.
-- What is PRIVATE: The private witness credential (`step` input representing monthly income/credit metric), underlying bank statements, account balances, and transaction logs, which stay encrypted in local device memory during proof construction.
-- What the user PROVES without revealing: The user proves they possess a valid financial credential satisfying contract requirements (e.g. Monthly Income ≥ ₦1,000,000) and executed a valid state transition on the Midnight ledger without revealing their exact income, account balance, or transaction history.
+- **What is PUBLIC**: The verified on-chain claim counter (`counter`), contract address, transaction proof verification result, attesting institution status, and network metadata.
+- **What is PRIVATE**: The private witness credential (`step` input representing monthly income/credit metric), underlying bank statements, account balances, and transaction logs, which stay encrypted in local device memory during proof construction.
+- **What the user PROVES without revealing**: The user proves they possess a valid financial credential satisfying contract requirements (e.g. Monthly Income ≥ ₦1,000,000) and executed a valid state transition on the Midnight ledger without revealing their exact income, account balance, or transaction history.
 
 ## Privacy Claim
 
@@ -34,45 +75,54 @@ Users connect their Lace wallet, select an attested financial credential (such a
 - **What an on-chain observer CAN see:** The public state transition (`counter`), contract address, block timestamp, issuer attestation status, and cryptographic proof verification validity.
 - **What an on-chain observer CANNOT see:** The private witness (`step`), exact income amount, user identity, spending history, or private account balance.
 
+---
+
 ## Tech Stack
 
-Midnight network, Compact, Midnight.js SDK, React/Next.js, Lace wallet
+- **Blockchain & ZK Layer**: Midnight Network, Compact Language, Midnight.js SDK, Lace Wallet
+- **Frontend**: React 18, Next.js 14, TypeScript, TailwindCSS, Lucide Icons
+- **Backend**: Golang 1.22+, PostgreSQL, OpenAPI 3.0, Docker & Docker Compose
 
-## Prerequisites
-
-- Lace wallet installed
-- Node.js v22
+---
 
 ## Run Locally
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/emarkees/afripass.git
-   cd afripass
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Set up environment configuration:
-   ```bash
-   cp .env.example .env.local
-   ```
-4. Start local development server:
-   ```bash
-   npm run dev
-   ```
-5. Open `http://localhost:3000` in your web browser.
+### 1. Start the Go Backend Server
+```bash
+cd backend
+go run cmd/server/main.go
+```
+*The backend API will start on `http://localhost:8080`.*
+
+### 2. Start the Frontend Application
+```bash
+# In the root repository
+npm install
+npm run dev
+```
+*Open `http://localhost:3000` in your web browser.*
+
+### 3. Run Tests
+```bash
+# Backend unit tests
+cd backend && go test ./...
+
+# Frontend type check & production build
+npm run build
+```
+
+---
 
 ## Demo Video
 
 https://www.loom.com/share/09a7aac782a44145831c27e9f6796a99
 
-## Verification & Compliance Checklist
+---
 
-- [x] **Lace Wallet Integration**: Connect and disconnect supported across all candidate Midnight networks.
-- [x] **Client-side ZK Proof Generation**: Proof is constructed strictly locally in the browser before submitting to Preprod contract.
-- [x] **Zero-Knowledge Privacy**: Private input witness is masked and never exposed in UI or network payload.
-- [x] **Contract Address**: Deployed Preprod contract specified in documentation.
-- [x] **Live Demo & Video**: Live URL (`https://afripass.vercel.app`) and walkthrough video included.
+## Verification Checklist
 
+- [x] **Midnight ZK Foundation**: Preserved Lace wallet, Compact contract, and local witness proof pipeline.
+- [x] **Multi-Tenant Provider Portal**: Provider onboarding, dashboard, staff role management, and organizational profile.
+- [x] **Go REST API Backend**: Modular Go REST API handling institutional attestations, credential issuance, and ZK verification.
+- [x] **SaaS Billing & Developer Tools**: Subscriptions, API key management, audit logs, and developer webhooks.
+- [x] **User Consent Center**: Verification requests with explicit user consent and minimum disclosure verification.

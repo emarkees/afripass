@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - APP_ENV=production
+      - DATABASE_URL=postgres://afripass:afripass_secure_password@postgres:5432/afripass_db?sslmode=disable
+      - JWT_SECRET=afripass_prod_jwt_secret_32bytes_min_length
+      - ATTESTATION_KEY=afripass_master_institutional_key
+      - MIDNIGHT_NETWORK=Midnight Preprod Network
+      - CORS_ALLOWED_ORIGINS=https://afripass-three.vercel.app,http://localhost:3000
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: afripass
+      POSTGRES_PASSWORD: afripass_secure_password
+      POSTGRES_DB: afripass_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql
+
+volumes:
+  postgres_data:

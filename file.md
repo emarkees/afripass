@@ -1,1209 +1,3700 @@
-# AFRIPASS — LEVEL 2 MIDNIGHT BUILDER CHALLENGE
 
-You are helping me complete **Level 2 of the Midnight Builder Challenge on Rise In**.
 
-My repo from Level 1 is at:
+Prompt:
+# AfriPass — Production-Ready Multi-Tenant Financial Verification Network
 
-```text
-[PASTE REPO PATH]
-```
 
-My Preprod contract address is:
 
-```text
-[PASTE CONTRACT ADDRESS]
-```
+## MASTER DEVELOPMENT PROMPT
 
-My project is called **AfriPass**.
+You are continuing development of the existing AfriPass Level 2 application.
 
-AfriPass is a privacy-first financial identity/verification concept that uses Midnight's zero-knowledge technology to allow users to prove selected financial claims without unnecessarily revealing their underlying private information.
+LIVE APPLICATION:
 
-**Level 1 has already been completed and approved.**
+https://afripass-three.vercel.app/
 
-Do NOT redo Level 1 unless a Level 1 artifact is genuinely required for Level 2.
+The current application already contains the Midnight privacy/ZK foundation.
 
-The primary objective of Level 2 is to add a working frontend that connects to the existing Preprod AfriPass contract through Lace and demonstrates privacy-preserving circuit interaction.
+Your job is to evolve AfriPass from a Level 2 prototype into a **production-oriented, multi-tenant financial credential verification platform**.
 
 ---
 
-════════════════════════════════════════
-MIDNIGHT DOCS MCP — ADD THIS FIRST
-════════════════════════════════════════
+# 1. CRITICAL: DO NOT REBUILD THE EXISTING PROJECT
 
-Before starting, make sure the Midnight documentation MCP is connected.
+DO NOT rebuild AfriPass from scratch.
 
-Run this command in your terminal:
+DO NOT remove or replace the existing:
 
-```bash
-claude mcp add --transport http midnight-docs https://midnight.mcp.kapa.ai
-```
+* Lace wallet connection
+* Midnight.js integration
+* Compact contract
+* Midnight Preprod configuration
+* existing ZK proof generation
+* existing ZK verification
+* private witness architecture
+* privacy dashboard
+* responsive UI
+* existing Light/Dark mode
+* existing Level 2 functionality
 
-Or access the docs directly at:
+Instead:
 
-```text
-https://midnight.mcp.kapa.ai
-```
+**EXTEND THE EXISTING APPLICATION.**
 
-This gives you live Midnight documentation inside every AI response.
-
-IMPORTANT:
-
-Before installing Midnight.js packages or implementing the wallet connection, verify the **current official Midnight documentation**.
-
-Do not blindly use outdated Midnight tutorials or APIs.
-
-If a package, API, or command in this prompt has changed, use the currently supported implementation while preserving the Level 2 requirements.
-
-Do not invent Midnight APIs.
+The existing Midnight functionality must continue working after every implementation phase.
 
 ---
 
-════════════════════════════════════════
-STEP 1 — FILE STRUCTURE
-════════════════════════════════════════
+# 2. NEW PRODUCT VISION
 
-Extend the Level 1 structure by adding the frontend:
+AfriPass is a:
+
+**Privacy-preserving financial credential and verification infrastructure platform.**
+
+AfriPass is NOT:
+
+* a bank
+* a lender
+* a centralized financial database
+* a replacement for financial institutions
+
+AfriPass connects:
+
+**Users + Financial-Service Providers + Credential Issuers + Verifiers**
+
+through privacy-preserving financial credentials and Midnight ZK proofs.
+
+Core architecture:
 
 ```text
-my-project/
-├── contracts/
-│   └── counter.compact
-├── managed/
-├── src/
-│   ├── components/
-│   │   ├── WalletConnect.tsx
-│   │   ├── CircuitCall.tsx
-│   │   └── PrivacyStatus.tsx
-│   │
-│   ├── hooks/
-│   │   └── useMidnight.ts
-│   │
-│   ├── App.tsx
-│   └── main.tsx
-│
-├── tests/
-├── public/
-├── .github/
-├── README.md
-├── package.json
-└── vite.config.ts
+Financial-Service Provider
+        ↓
+Provider Attestation
+        ↓
+AfriPass Credential
+        ↓
+User Financial Passport
+        ↓
+User Consent
+        ↓
+Midnight ZK Proof
+        ↓
+Verification Request
+        ↓
+Verifier
+        ↓
+Eligibility Result
 ```
 
-If the existing AfriPass repository already contains a frontend, **extend the existing frontend instead of creating a duplicate application**.
+Core product principle:
 
-Do not delete the Level 1 contract or generated `managed/` directory.
+**VERIFY MORE. REVEAL LESS.**
 
 ---
 
-════════════════════════════════════════
-STEP 2 — FRONTEND SETUP
-════════════════════════════════════════
+# 3. IMPORTANT NEW REQUIREMENT: MULTI-TENANT ARCHITECTURE
 
-* Scaffold a React + Vite project, or use the existing React/Vite frontend if already present.
-* Use TypeScript.
-* Install the currently supported Midnight.js SDK and DApp connector packages.
-* The original challenge prompt references:
+AfriPass must be designed as a **multi-tenant platform**.
 
-```bash
-npm install @midnight-ntwrk/midnight-js-network-provider
-npm install @midnight-ntwrk/dapp-connector-api
+Every financial-service provider/organization must have its own isolated organization account.
+
+Examples:
+
+```text
+ABC Finance
+├── Admins
+├── Issuers
+├── Verifiers
+├── Developers
+└── Auditors
 ```
 
-Before installing, verify whether these are still the correct/current packages.
-
-Use the current official Midnight documentation if package names or APIs have changed.
-
-The frontend must communicate with the **existing Level 1 AfriPass Preprod contract**.
-
-Do NOT create a fake contract or mock the blockchain interaction for the final implementation.
-
-Confirm the project builds with no errors:
-
-```bash
-npm run build
+```text
+XYZ Microfinance
+├── Admins
+├── Issuers
+├── Verifiers
+└── Developers
 ```
 
-If supported:
+These organizations must NOT be able to access each other's:
 
-```bash
-npx tsc --noEmit
-```
+* customers
+* credentials
+* API keys
+* verification requests
+* audit logs
+* usage statistics
+* team members
+* billing information
+* internal settings
 
-Both should pass before continuing.
+Every organization is a separate tenant.
 
 ---
 
-════════════════════════════════════════
-STEP 2A — AFRIPASS UI DESIGN
-════════════════════════════════════════
+# 4. ORGANIZATION / TENANT MODEL
 
-The frontend must look like a professional **privacy-first financial technology application**, not a generic blockchain demo.
-
-The primary visual concepts are:
+Create a first-class:
 
 ```text
-AFRICA
-+
-FINANCE
-+
-PRIVACY
-+
-ZERO-KNOWLEDGE PROOFS
-+
-SECURE DIGITAL IDENTITY
+Organization
 ```
 
-The interface should immediately communicate that AfriPass is designed around privacy.
+entity.
 
-Use a clean, modern and professional design.
+An organization represents a financial-service provider using AfriPass.
 
-Avoid excessive animations, unnecessary Web3 jargon, or overly complicated dashboards.
+Organization fields should conceptually include:
+
+```text
+id
+name
+slug
+organization_type
+country
+website
+business_email
+contact_phone
+status
+verification_status
+subscription_plan
+subscription_status
+created_at
+updated_at
+```
+
+Organization types:
+
+```text
+BANK
+FINTECH
+LENDER
+MICROFINANCE
+COOPERATIVE
+EMPLOYER
+CREDIT_PROVIDER
+MERCHANT_FINANCE
+OTHER
+```
+
+Do NOT assume every organization is a bank.
 
 ---
 
-### HERO SECTION
+# 5. PROVIDER ACCOUNT CREATION
 
-The homepage should contain a strong hero section.
-
-Use messaging similar to:
+Create:
 
 ```text
-Your Financial Identity.
-Without Unnecessary Disclosure.
+/provider/register
 ```
 
-Supporting text:
+A financial organization should be able to create an AfriPass account.
+
+Registration should collect only appropriate business information.
+
+Fields:
+
+* Organization name
+* Organization type
+* Country
+* Business email
+* Website
+* Contact person
+* Phone
+* Intended capabilities
+* Issuer
+* Verifier
+* Issuer + Verifier
+
+After registration:
 
 ```text
-AfriPass lets you prove selected financial credentials
-using zero-knowledge technology without unnecessarily
-exposing the information behind them.
+Account Created
+      ↓
+Email Verification
+      ↓
+Organization Review
+      ↓
+Provider Approval
+      ↓
+Subscription Selection
+      ↓
+Provider Dashboard
 ```
 
-Primary CTA:
-
-```text
-Connect Lace
-```
-
-After wallet connection, the primary action may become:
-
-```text
-Verify Privately
-```
-
-Include a visible privacy indicator:
-
-```text
-🔒 Privacy-first verification powered by Midnight
-```
+Do NOT automatically grant production privileges.
 
 ---
 
-════════════════════════════════════════
-STEP 2B — PRIVACY IMAGES / VISUALS
-════════════════════════════════════════
+# 6. PROVIDER ORGANIZATION STATUS
 
-The frontend MUST include visual elements/images that immediately communicate **privacy and secure financial information**.
-
-Use appropriate high-quality visual assets.
-
-The visual theme should include concepts such as:
-
-* Digital privacy
-* Shield
-* Lock
-* Encrypted financial information
-* Zero-knowledge proofs
-* Secure digital identity
-* Private credentials
-* Selective disclosure
-* Financial data protection
-
-A hero illustration should communicate this concept:
+Support:
 
 ```text
-PRIVATE FINANCIAL DATA
-          ↓
-       🔒 SHIELD
-          ↓
- ZERO-KNOWLEDGE PROOF
-          ↓
-       ✓ VERIFIED
+PENDING_REVIEW
+APPROVED
+REJECTED
+SUSPENDED
+DEACTIVATED
 ```
 
-The image should be abstract or use synthetic information.
+Also support:
 
-NEVER use:
+```text
+EMAIL_UNVERIFIED
+BUSINESS_VERIFICATION_PENDING
+BUSINESS_VERIFIED
+```
 
-* Real bank statements
-* Real account numbers
-* Real credit-card numbers
-* Real personal financial information
-* Real people's private documents
+The UI must clearly distinguish:
 
-The images must support the privacy story rather than distract from the application.
+* account status
+* business verification status
+* subscription status
+* API status
 
 ---
 
-### PRIVACY VISUAL CARDS
+# 7. PROVIDER DASHBOARD
 
-Add three visual information cards somewhere below the hero section.
+Every provider gets its own dashboard.
 
-#### Card 1
-
-```text
-🔒
-KEEP DATA PRIVATE
-
-Sensitive information remains
-a private input during verification.
-```
-
-#### Card 2
+Route:
 
 ```text
-✓
-PROVE WITHOUT REVEALING
-
-Use zero-knowledge technology
-to prove the required claim.
+/provider/dashboard
 ```
 
-#### Card 3
+Dashboard must be tenant-specific.
 
-```text
-🛡
-VERIFY ON MIDNIGHT
+Show:
 
-Submit the required proof to
-the Midnight network.
-```
+### Overview
 
-Make sure the wording accurately reflects what the actual Level 1 contract does.
-
-Do not make unsupported privacy claims.
-
----
-
-### PUBLIC VS PRIVATE VISUAL
-
-Add a simple visual explanation:
-
-```text
-             AFRIPASS
-                │
-       ┌────────┴────────┐
-       │                 │
-       ▼                 ▼
-   PRIVATE INPUT     PUBLIC RESULT
-       🔒                 ✓
-       │                  │
-       ▼                  ▼
-  ZK CIRCUIT         MIDNIGHT LEDGER
-       │
-       ▼
-    ZK PROOF
-```
-
-Include explanatory text:
-
-```text
-Private
-Your private input is used to construct the proof.
-
-Public
-Only the information intentionally committed
-to the Midnight ledger is public.
-```
-
-The exact wording must be consistent with the actual Compact contract.
-
----
-
-════════════════════════════════════════
-STEP 2C — LIGHT & DARK MODE
-════════════════════════════════════════
-
-The frontend MUST support:
-
-```text
-Light Mode
-Dark Mode
-```
-
-Add a theme toggle to the application header.
+* Credentials issued
+* Active credentials
+* Revoked credentials
+* Expired credentials
+* Proofs verified
+* Verification requests
+* Active API keys
+* API usage
+* Current subscription
+* Subscription renewal
+* Organization status
 
 Example:
 
 ```text
-AfriPass                         ☀ / ☾    Connect Lace
-```
+ABC FINANCE
 
-Requirements:
+Approved Provider
+Issuer + Verifier
 
-* User can switch between light and dark mode.
-* Theme applies to the entire application.
-* Theme preference persists where practical.
-* Respect system preference when no preference has been selected.
-* Theme toggle has an accessible label.
-* Both themes must have good contrast.
-* Do not create separate applications for each theme.
+Credentials
+1,284
 
-If Tailwind CSS is used, use its supported dark-mode functionality.
+Proofs Verified
+486
 
----
+Verification Requests
+742
 
-### LIGHT MODE
+API Calls
+18,492
 
-Light mode should feel:
-
-```text
-Clean
+Current Plan
 Professional
-Trustworthy
-Financial
-Privacy-focused
+
+Renewal
+30 September 2026
 ```
+
+Do not use hardcoded statistics in production.
+
+The dashboard must consume backend API data.
 
 ---
 
-### DARK MODE
+# 8. ORGANIZATION ADMIN
 
-Dark mode should feel:
+Every organization must have an administrator.
 
-```text
-Secure
-Private
-Modern
-Technical
-Premium
-```
-
-The privacy visuals should remain clearly visible in both modes.
-
-Do not use excessive neon/glow effects.
-
----
-
-════════════════════════════════════════
-STEP 3 — WALLET CONNECTION
-════════════════════════════════════════
-
-Build:
-
-```text
-src/components/WalletConnect.tsx
-```
-
-Requirements:
-
-* Connect button triggers Lace wallet connection.
-* Disconnect button clears wallet state.
-* Connected wallet address appears on screen.
-* Clear disconnected state.
-* Handle wallet errors.
-
-The implementation MUST use the current supported Lace/Midnight DApp connector API.
-
-Do not invent API methods.
-
----
-
-### DISCONNECTED STATE
-
-Display:
-
-```text
-Wallet not connected
-
-[ Connect Lace ]
-```
-
----
-
-### CONNECTED STATE
-
-Display:
-
-```text
-✓ Wallet Connected
-
-addr_test1...xxxx
-
-[ Disconnect ]
-```
-
-The address may be truncated visually.
-
----
-
-### ERROR HANDLING
-
-Handle:
-
-#### Wallet not installed
-
-```text
-Lace wallet not detected.
-Please install Lace to continue.
-```
-
-#### User rejects connection
-
-```text
-Wallet connection was cancelled.
-```
-
-#### Wrong network
-
-```text
-Wrong network detected.
-Please switch to Midnight Preprod.
-```
-
-#### Connection error
-
-Display a clear user-friendly error.
-
-Do not expose technical secrets or private inputs.
-
----
-
-════════════════════════════════════════
-STEP 4 — MIDNIGHT HOOK
-════════════════════════════════════════
+The organization owner/admin should be able to manage the organization.
 
 Create:
 
 ```text
-src/hooks/useMidnight.ts
+/provider/organization
 ```
 
-This hook should centralize Midnight interaction.
+Capabilities:
 
-Conceptually it should provide functionality such as:
-
-```text
-useMidnight()
-│
-├── wallet
-├── isConnected
-├── address
-├── connect()
-├── disconnect()
-├── contract
-├── callCircuit()
-├── transaction state
-└── error state
-```
-
-Use the actual current Midnight.js APIs.
-
-Do not invent methods.
-
-Do not spread raw Midnight SDK logic unnecessarily throughout the components.
+* View organization
+* Update organization profile
+* View verification status
+* Manage team
+* Manage roles
+* Manage API access
+* Manage subscription
+* View usage
+* View security
+* View audit logs
 
 ---
 
-════════════════════════════════════════
-STEP 4A — PRIVACY STATUS COMPONENT
-════════════════════════════════════════
+# 9. ADMIN CAN CREATE USERS
+
+This is a critical production requirement.
+
+An organization administrator must be able to create/invite staff accounts.
 
 Create:
 
 ```text
-src/components/PrivacyStatus.tsx
+/provider/team
 ```
 
-It should communicate the current privacy state.
-
-Before proof:
+Admin can:
 
 ```text
-🔒 Privacy Protected
-
-Your private input is not displayed.
+Invite User
+Create User
+Deactivate User
+Reactivate User
+Remove User
+Change Role
+Reset User Access
 ```
 
-During proof generation:
-
-```text
-🔐 Generating Private Proof
-
-Your private input is being used
-to construct the proof.
-```
-
-After proof:
-
-```text
-✓ Proof Generated
-
-Proved without revealing your input.
-```
-
-After transaction:
-
-```text
-✓ Verified on Midnight Preprod
-
-Your proof was submitted successfully.
-```
-
-Do not display the actual private input.
-
----
-
-════════════════════════════════════════
-STEP 5 — CIRCUIT CALL
-════════════════════════════════════════
-
-Build:
-
-```text
-src/components/CircuitCall.tsx
-```
-
-The component must call a circuit from the **actual Level 1 AfriPass Preprod contract**.
-
-First inspect:
-
-```text
-contracts/
-managed/
-```
-
-Determine the actual:
-
-* Contract name
-* Circuit name
-* Circuit arguments
-* Public state
-* Private witness
-* Generated API
-
-Do NOT assume the circuit is called `increment`.
-
-Use the actual circuit from the Level 1 AfriPass contract.
-
----
-
-### CIRCUIT UI
-
-Display a privacy-focused interface:
-
-```text
-Privacy Verification
-
-Prove your credential without
-unnecessarily revealing your input.
-
-[ Generate Private Proof ]
-
-🔒 Proved without revealing your input
-```
-
----
-
-### PROOF GENERATION
-
-When the user clicks the button:
-
-```text
-Generating zero-knowledge proof...
-
-Your private input is not displayed.
-```
-
-Show a loading state.
-
-Disable duplicate submissions.
-
----
-
-### ON-CHAIN RESULT
-
-After successful submission:
-
-```text
-✓ Proof Generated
-
-✓ Submitted to Midnight Preprod
-
-Proved without revealing your input.
-```
-
-Display the transaction identifier/hash if available.
-
-Do not display the private input.
-
----
-
-════════════════════════════════════════
-STEP 5A — PRIVATE INPUT SECURITY
-════════════════════════════════════════
-
-Private inputs MUST NEVER be intentionally exposed in the UI.
-
-The private input must NOT be:
-
-* Displayed after submission.
-* Logged using `console.log`.
-* Added to URLs.
-* Stored in localStorage.
-* Stored in sessionStorage.
-* Sent to an unnecessary backend.
-* Sent to analytics.
-* Included in error messages.
-* Included in screenshots.
-* Added to transaction metadata unnecessarily.
-
-If an input field is required to demonstrate the circuit:
-
-* Mask the value.
-* Never display it after submission.
-* Never log it.
-* Never persist it.
+Do NOT require every staff member to register the organization again.
 
 Example:
 
 ```text
-Private credential
+ABC Finance
 
-[ •••••••••• ]
+Users
 
-🔒 This information remains private.
+John Doe
+Owner
+
+Mary James
+Admin
+
+David Smith
+Issuer
+
+Sarah Brown
+Verifier
+
+Michael Adams
+Developer
+
+Peter Jones
+Auditor
 ```
-
-After proof:
-
-```text
-✓ Proof generated
-
-Private input:
-Protected 🔒
-```
-
-Never show the actual value.
 
 ---
 
-════════════════════════════════════════
-STEP 5B — PRIVACY CLAIM
-════════════════════════════════════════
+# 10. STAFF INVITATION FLOW
 
-The application must include a privacy explanation.
+Implement:
 
-Use a technically accurate statement such as:
+```text
+Admin
+ ↓
+Invite Staff
+ ↓
+Email Invitation
+ ↓
+User Accepts
+ ↓
+Create Password
+ ↓
+Email Verification
+ ↓
+Assigned Organization
+ ↓
+Assigned Role
+ ↓
+Provider Dashboard
+```
 
-> AfriPass uses zero-knowledge technology to allow the required claim to be proven without directly revealing the private witness used to construct the proof.
+An invited staff member must automatically belong to the correct organization.
 
-Before adding this claim, verify it against the actual Compact contract.
+Never allow a user to manipulate an organization ID from the frontend to gain access to another tenant.
 
-Do NOT claim:
-
-* Absolute anonymity.
-* That all transaction information is private.
-* That the blockchain cannot see anything.
-* That AfriPass is a production KYC replacement.
-* That AfriPass is a regulated financial service.
-
-The claim must describe what the actual implementation demonstrates.
+Tenant membership must be enforced by the backend.
 
 ---
 
-════════════════════════════════════════
-STEP 6 — DEPLOY FRONTEND
-════════════════════════════════════════
+# 11. ROLE-BASED ACCESS CONTROL
 
-Deploy the frontend using Vercel unless another deployment platform is already configured.
-
-Add:
+Roles:
 
 ```text
-vercel.json
+OWNER
+ADMIN
+ISSUER
+VERIFIER
+AUDITOR
+DEVELOPER
 ```
 
-only if necessary.
+Permissions:
 
-Provide the exact CLI commands required.
+### OWNER
 
-For example, after verifying the current Vercel workflow:
+Full organization control.
 
-```bash
-npm install -g vercel
-vercel
-```
+Can:
 
-Production deployment:
+* manage admins
+* manage users
+* manage billing
+* manage API
+* issue credentials
+* revoke credentials
+* verify proofs
+* view audit logs
+* change organization settings
 
-```bash
-vercel --prod
-```
+### ADMIN
 
-Do not claim deployment succeeded until the real deployment URL is returned.
+Can:
+
+* manage users
+* manage roles
+* manage organization profile
+* view operational data
+* manage approved settings
+
+### ISSUER
+
+Can:
+
+* issue credentials
+* view issued credentials
+* revoke credentials
+* view issuance history
+
+Cannot:
+
+* manage billing
+* create admins
+* manage API security
+
+### VERIFIER
+
+Can:
+
+* create verification requests
+* verify proofs
+* view verification history
+
+### AUDITOR
+
+Read-only access to:
+
+* audit logs
+* credential activity
+* verification activity
+* security activity
+
+### DEVELOPER
+
+Can:
+
+* manage API keys
+* view API documentation
+* configure webhooks
+* view API usage
+
+Do NOT implement roles only visually.
+
+Backend authorization must enforce every permission.
 
 ---
 
-### IMPORTANT
+# 12. SUBSCRIPTION SYSTEM
 
-The live frontend MUST connect to:
+AfriPass should operate as a SaaS/API platform.
+
+Providers should subscribe to an API plan to access production API functionality.
+
+Create:
 
 ```text
-Midnight Preprod
+/provider/billing
 ```
 
 and:
 
 ```text
-[LEVEL 1 PREPROD CONTRACT ADDRESS]
+/pricing
 ```
 
-Do not accidentally deploy the frontend configured for Preview.
+Possible plans:
 
-Use environment variables where appropriate.
+### Free / Sandbox
 
-Provide:
+For development and testing.
+
+Example:
 
 ```text
-.env.example
+Sandbox API
+Limited requests
+Synthetic/test credentials
+Test verification
+No production issuance
 ```
 
-and ensure secrets are not committed.
+### Starter
 
----
+For small organizations.
 
-════════════════════════════════════════
-STEP 7 — README.md
-════════════════════════════════════════
-
-Update the existing README.md.
-
-Do NOT delete useful Level 1 documentation.
-
-The README must contain ALL of these sections:
-
-# AfriPass
-
-> A privacy-preserving financial passport that enables users to prove selected financial credentials without unnecessarily exposing their underlying private information.
-
-## Live Demo
+Example:
 
 ```text
-[PASTE LIVE URL AFTER DEPLOYING FRONTEND]
+API access
+Credential issuance
+Proof verification
+Basic team members
+Basic audit logs
+Usage limits
 ```
 
-The real live URL must be added after deployment.
+### Professional
 
----
+For growing providers.
 
-## Contract Address
-
-| Network | Address                         |
-| ------- | ------------------------------- |
-| Preprod | [CONTRACT ADDRESS FROM LEVEL 1] |
-
-The contract address is MANDATORY.
-
-Do not leave it blank.
-
----
-
-## What This Does
-
-Explain in plain English what AfriPass does.
-
-Explain that the application allows users to interact with the deployed Midnight contract and demonstrate privacy-preserving verification.
-
----
-
-## Privacy Model
-
-Explain:
-
-### What is PUBLIC
-
-What information is visible on-chain.
-
-### What is PRIVATE
-
-What remains a private witness/input.
-
-### What the user PROVES without revealing
-
-Explain the actual claim demonstrated by the Level 1 contract.
-
----
-
-## Privacy Claim
-
-Include a specific statement describing:
+Example:
 
 ```text
-What an on-chain observer can see
+Higher API limits
+More team members
+Advanced verification
+Webhooks
+Advanced audit logs
+API analytics
+Priority support
 ```
 
-versus:
+### Enterprise
+
+For large financial organizations.
+
+Example:
 
 ```text
-What the observer cannot directly recover
+Custom API limits
+Large-scale verification
+Advanced security
+Dedicated infrastructure options
+Custom integrations
+Advanced compliance
+SLA
+Priority support
 ```
 
-The statement must be verified against the actual implementation.
+IMPORTANT:
+
+Do not hardcode prices if billing infrastructure has not been implemented.
+
+Use configurable subscription plans from the backend.
 
 ---
 
-## Tech Stack
+# 13. SUBSCRIPTION STATES
 
-Include technologies actually used:
+Support:
 
 ```text
-Midnight Network
-Compact
-Midnight.js SDK
-React
-Vite
-TypeScript
-Lace Wallet
-Node.js v22
-Docker
+TRIALING
+ACTIVE
+PAST_DUE
+CANCELED
+EXPIRED
+SUSPENDED
 ```
 
----
-
-## Prerequisites
+The provider dashboard should clearly display:
 
 ```text
-Lace wallet installed
-Node.js v22
-npm
-Midnight Preprod access
+Plan:
+Professional
+
+Status:
+Active
+
+API Usage:
+72%
+
+Renewal:
+30 September 2026
 ```
+
+If a subscription expires, the backend—not the frontend—must determine what API functionality remains available.
 
 ---
 
-## Run Locally
+# 14. API ACCESS MUST DEPEND ON SUBSCRIPTION
 
-Provide tested commands:
+A provider cannot simply create an API key and gain unlimited production access.
 
-```bash
-git clone <repository-url>
-cd afripass
-npm install
-npm run dev
-```
-
-If environment configuration is required:
-
-```bash
-cp .env.example .env.local
-```
-
-Then explain the required variables.
-
----
-
-## Build
-
-```bash
-npm run build
-```
-
----
-
-## Demo Video
+The backend must check:
 
 ```text
-[PLACEHOLDER — I WILL ADD THE LINK AFTER RECORDING]
+Organization
++
+Subscription
++
+Subscription status
++
+API permission
++
+API quota
++
+User role
++
+API key status
+```
+
+before allowing protected API operations.
+
+Example:
+
+```text
+API Request
+     ↓
+Authenticate API Key
+     ↓
+Identify Organization
+     ↓
+Check Subscription
+     ↓
+Check Permission
+     ↓
+Check Rate Limit
+     ↓
+Check Quota
+     ↓
+Authorize Request
+     ↓
+Execute
 ```
 
 ---
 
-## Privacy Design
+# 15. API MANAGEMENT / DEVELOPER PORTAL
 
-Document the visual privacy features:
+Create:
 
-* Privacy-first hero section.
-* Private/public visual explanation.
-* Privacy status component.
-* Privacy-focused imagery.
-* Light mode.
-* Dark mode.
-* Privacy messaging.
+```text
+/provider/api
+```
+
+and:
+
+```text
+/provider/developer
+```
+
+The provider's developer should be able to:
+
+* create API keys
+* revoke API keys
+* rotate API keys
+* view API key status
+* view last-used time
+* view API permissions
+* view API usage
+* view API errors
+* configure webhooks
+* view API documentation
+* view sandbox credentials
+* manage production API access
+
+Never expose full API secrets after creation.
 
 ---
 
-════════════════════════════════════════
-STEP 8 — DEMO VIDEO CHECKLIST
-════════════════════════════════════════
+# 16. API KEY SECURITY
 
-Tell me exactly what to record in a demo video under 2 minutes.
+API keys must:
 
-### 1. Connect Lace
+* be generated securely
+* be hashed where appropriate
+* support expiration
+* support revocation
+* support rotation
+* support scopes
+* be associated with an organization
+* optionally be associated with a team member
+* never be stored in plaintext unnecessarily
+
+Example permissions:
+
+```text
+credential:issue
+credential:read
+credential:revoke
+verification:create
+verification:verify
+organization:read
+webhook:manage
+```
+
+Use least privilege.
+
+---
+
+# 17. API USAGE DASHBOARD
+
+Create:
+
+```text
+/provider/api/usage
+```
+
+Display:
+
+```text
+API Requests
+
+Today
+1,284
+
+This Month
+18,492
+
+Remaining
+81,508
+
+Success Rate
+99.4%
+
+Average Response Time
+240ms
+```
+
+Charts should be driven by backend data.
+
+Support filtering:
+
+* Today
+* 7 days
+* 30 days
+* Custom range
+
+---
+
+# 18. API QUOTAS
+
+Plans must support configurable limits.
+
+Example:
+
+```text
+Monthly API Requests
+Credential Issuance
+Proof Verification
+Verification Requests
+Webhook Events
+Team Members
+API Keys
+```
+
+Do not hardcode limits in React.
+
+The backend should return the organization's current entitlements.
+
+---
+
+# 19. USAGE ALERTS
+
+Add configurable usage alerts.
+
+Example:
+
+```text
+80% API usage
+90% API usage
+100% API usage
+```
+
+Provider admin can receive:
+
+* email notification
+* dashboard notification
+* webhook notification where configured
+
+---
+
+# 20. BILLING ARCHITECTURE
+
+Create a billing abstraction.
+
+Do NOT tightly couple the application to one payment provider.
+
+Create:
+
+```text
+BillingService
+PaymentProvider
+SubscriptionService
+InvoiceService
+```
+
+Potential payment providers can later include:
+
+* Paystack
+* Flutterwave
+* Stripe
+
+The architecture must allow another provider to be added without rewriting the billing system.
+
+---
+
+# 21. INVOICES
+
+Create:
+
+```text
+/provider/billing/invoices
+```
 
 Show:
 
 ```text
-Connect Lace
+Invoice ID
+Period
+Plan
+Amount
+Status
+Issued
+Due
+Paid
 ```
 
-Then show the wallet address appearing.
+Possible states:
+
+```text
+DRAFT
+OPEN
+PAID
+FAILED
+VOID
+REFUNDED
+```
+
+Do not store unnecessary payment-card information.
 
 ---
 
-### 2. Call the Circuit
+# 22. PROVIDER API SANDBOX
 
-Show the privacy verification screen.
+Create a sandbox environment.
 
-Click:
-
-```text
-Generate Private Proof
-```
-
-Show:
+Example:
 
 ```text
-Generating zero-knowledge proof...
+Sandbox
+Production
 ```
 
-Do NOT show the private input.
+Sandbox allows developers to test:
+
+* credential issuance
+* verification requests
+* proof verification
+* webhooks
+* API authentication
+
+Synthetic data must be clearly labelled:
+
+```text
+SANDBOX DATA
+```
+
+Never make sandbox credentials appear to be real financial credentials.
 
 ---
 
-### 3. Show Result
+# 23. PRODUCTION / SANDBOX SEPARATION
 
-Show:
+Strictly separate:
 
 ```text
-✓ Proof Generated
-✓ Submitted to Midnight Preprod
+Development
+Sandbox
+Staging
+Production
 ```
 
-Show the transaction result/ID if available.
+Production data must never be mixed with sandbox data.
+
+API keys must be environment-specific.
+
+Example:
+
+```text
+sandbox_afp_...
+production_afp_...
+```
+
+Use separate backend configurations and databases where appropriate.
 
 ---
 
-### 4. Explain Privacy
+# 24. CREDENTIAL ISSUANCE
 
-Point to:
+Provider issuers should be able to issue:
 
-```text
-Proved without revealing your input
-```
+* Income Credential
+* Savings Credential
+* Repayment Credential
+* Credit Eligibility Credential
+* Business Revenue Credential
+* Employment Income Credential
+* Account Standing Credential
 
-Explain briefly that the proof demonstrates the required claim without exposing the underlying private witness.
+The frontend sends issuance requests to the backend.
 
----
-
-### 5. Show Dark Mode
-
-Briefly switch:
-
-```text
-Light Mode → Dark Mode
-```
-
-Show that the privacy-focused UI works in both themes.
+Never allow the browser to directly create a trusted issuer credential.
 
 ---
 
-════════════════════════════════════════
-STEP 9 — FINAL CHECKLIST
-════════════════════════════════════════
+# 25. REAL PROVIDER ATTESTATION
 
-Print ✓ or ✗ for each requirement:
+A provider-issued credential must contain provenance.
+
+Conceptually:
 
 ```text
-[ ] Lace wallet connect working
-[ ] Lace wallet disconnect working
-[ ] Wallet address displayed
-[ ] Wallet-not-installed error handled
-[ ] User-rejected connection handled
-[ ] Wrong-network error handled
-[ ] Preprod network configured
-[ ] Actual Level 1 Preprod contract connected
-[ ] Circuit called from frontend
-[ ] Proof generated locally
-[ ] Loading state shown during proof generation
-[ ] Transaction submitted on-chain
-[ ] Transaction result displayed
-[ ] Private input never intentionally displayed
-[ ] Private input never logged
-[ ] Private input not stored in localStorage
-[ ] Private input not stored in sessionStorage
-[ ] Private input not exposed through URL
-[ ] Privacy Status component implemented
-[ ] Privacy Claim section implemented
-[ ] Privacy-focused images/visuals added
-[ ] Public vs private explanation added
-[ ] Light mode working
-[ ] Dark mode working
-[ ] Theme toggle working
-[ ] Responsive design working
-[ ] Frontend builds successfully
-[ ] TypeScript passes
-[ ] Live frontend deployed
-[ ] Live URL connects to Preprod
-[ ] Contract address in README.md
-[ ] Live demo link in README.md
-[ ] Privacy Claim section in README.md
-[ ] File structure matches specification
-[ ] Demo video recorded
+issuerId
+organizationId
+credentialId
+subjectCommitment
+credentialType
+claimCommitment
+issuedAt
+expiresAt
+status
+signature
+signatureAlgorithm
+keyId
+version
 ```
+
+The provider cryptographically attests to the credential.
+
+Never allow:
+
+```text
+user enters ₦2,000,000
+↓
+frontend marks verified
+```
+
+Instead:
+
+```text
+Approved Provider
+↓
+Attestation
+↓
+Credential
+↓
+Midnight ZK Proof
+↓
+Verifier
+```
+
+---
+
+# 26. TRANSACTION EVIDENCE
+
+Support transaction-level evidence when the originating provider actually supplies it.
+
+Possible fields:
+
+```text
+transactionReference
+providerId
+integrityHash
+signatureReference
+verifiedAt
+```
+
+UI:
+
+```text
+Issuer Signature
+✓ Valid
+
+Transaction Evidence
+✓ Validated
+
+Transaction Signature
+✓ Valid
+```
+
+ONLY display "Transaction Signature: Valid" when a genuine provider-supplied transaction signature exists.
+
+If unavailable:
+
+```text
+Transaction Signature
+Not provided by issuer
+
+Provider Authentication
+✓ Verified
+```
+
+Never fabricate transaction signatures.
+
+---
+
+# 27. CREDENTIAL REVOCATION
+
+Providers must be able to revoke credentials.
+
+Require:
+
+* authorization
+* reason
+* timestamp
+* actor
+* credential ID
+
+States:
+
+```text
+ACTIVE
+REVOKED
+EXPIRED
+SUSPENDED
+INVALID
+```
+
+Revoked credentials must not be treated as valid by verification services.
+
+---
+
+# 28. VERIFICATION REQUEST SYSTEM
+
+Providers can create requests such as:
+
+```text
+Income ≥ ₦1,000,000
+```
+
+Purpose:
+
+```text
+Loan eligibility
+```
+
+User receives:
+
+```text
+ABC Finance requests proof of:
+
+Income ≥ ₦1,000,000
+
+Purpose:
+Loan application
+
+Data disclosed:
+Eligibility result only
+```
+
+User must explicitly consent.
+
+---
+
+# 29. VERIFIER PORTAL
+
+Create:
+
+```text
+/provider/verify
+```
+
+Support:
+
+* Verification code
+* QR code
+* Proof reference
+* Verification request
+* API verification
+
+Return:
+
+```text
+VALID
+
+Claim:
+Income ≥ ₦1,000,000
+
+Credential:
+Valid
+
+Issuer:
+Approved Provider
+
+Proof:
+Cryptographically Valid
+
+Underlying financial information:
+Not disclosed
+```
+
+---
+
+# 30. QR VERIFICATION
+
+QR codes must never contain unnecessary raw financial information.
 
 Use:
 
 ```text
-✓ COMPLETE
-✗ NOT COMPLETE
-⚠ BLOCKED
+Verification Session ID
++
+Secure reference
++
+Cryptographic verification information
 ```
 
-Never mark an item complete without actually testing it.
+Flow:
+
+```text
+User
+ ↓
+Generate Proof
+ ↓
+Create Verification Session
+ ↓
+Generate QR
+ ↓
+Provider scans
+ ↓
+AfriPass API
+ ↓
+Verify
+ ↓
+Minimum result
+```
 
 ---
 
-════════════════════════════════════════
-FINAL REPORT
-════════════════════════════════════════
+# 31. VERIFICATION SESSION SECURITY
 
-At the end provide:
-
-## Level 2 Status
+Every verification session should support:
 
 ```text
-COMPLETE / IN PROGRESS / BLOCKED
+session_id
+request_id
+created_at
+expires_at
+status
+verifier_id
+subject_commitment
+proof_reference
 ```
 
-## Preprod Contract
+Statuses:
 
 ```text
-Network:
-Preprod
-
-Contract:
-<REAL CONTRACT ADDRESS>
+PENDING
+APPROVED
+VERIFIED
+REJECTED
+EXPIRED
+REVOKED
 ```
 
-## Frontend
+Sessions should expire automatically.
+
+Example:
 
 ```text
-Local:
-<LOCAL URL>
-
-Production:
-<REAL LIVE URL>
+Verification expires in 14 minutes
 ```
 
-## Wallet
+---
+
+# 32. PROVIDER DIRECTORY
+
+Create:
 
 ```text
-Lace:
-CONNECTED / NOT TESTED / BLOCKED
+/providers
 ```
 
-## Circuit
+Show:
+
+* Organization
+* Type
+* Country
+* Capabilities
+* Approval status
+* Issuer capability
+* Verifier capability
+
+Do not expose customer information.
+
+---
+
+# 33. PROVIDER TRUST MODEL
+
+Provider badges:
 
 ```text
-Circuit:
-<ACTUAL CIRCUIT NAME>
-
-Proof:
-LOCAL / NOT WORKING / BLOCKED
+✓ AfriPass Approved Provider
+✓ Credential Issuer
+✓ Proof Verifier
+⚠ Pending Approval
+✕ Suspended
 ```
 
-## Transaction
+These badges must be backend-derived.
+
+---
+
+# 34. USER FINANCIAL PASSPORT
+
+Users can have credentials from multiple organizations.
+
+Example:
 
 ```text
-Status:
-SUCCESS / FAILED / NOT TESTED
+Income
+← Employer
 
-Transaction:
-<REAL TRANSACTION ID IF AVAILABLE>
+Savings
+← Bank
+
+Repayment
+← Lender
+
+Business Revenue
+← Fintech
 ```
 
-## Build
+AfriPass combines these into a portable privacy-preserving identity.
+
+No single provider should automatically own the user's entire financial identity.
+
+---
+
+# 35. USER CONSENT CENTER
+
+Create:
 
 ```text
-Build:
-PASS / FAIL
-
-TypeScript:
-PASS / FAIL
+/settings/privacy
 ```
 
-## Git
+or:
 
 ```text
-Changes committed:
-YES / NO
-
-Changes pushed:
-YES / NO
+/consents
 ```
 
-## Remaining Actions
+Users should be able to see:
 
-Only list actions I personally need to perform.
+* who requested data/proof
+* what claim was requested
+* purpose
+* what was disclosed
+* when access expires
+* consent status
+* revoke where protocol permits
+
+---
+
+# 36. USER ACTIVITY
+
+Create:
+
+```text
+/activity
+```
+
+Show:
+
+```text
+Credential received
+Proof generated
+Verification approved
+Verification completed
+Consent granted
+Consent expired
+```
+
+Avoid exposing sensitive financial values.
+
+---
+
+# 37. PROVIDER AUDIT LOG
+
+Every organization should have its own audit log.
+
+Events:
+
+* Login
+* Logout
+* User invited
+* User removed
+* Role changed
+* API key created
+* API key revoked
+* Credential issued
+* Credential revoked
+* Verification request created
+* Proof verified
+* Organization settings changed
+* Subscription changed
+* Security settings changed
+
+Audit events must contain:
+
+```text
+actor
+organization
+event
+resource
+timestamp
+IP metadata where appropriate
+result
+```
+
+Never unnecessarily log private financial values.
+
+---
+
+# 38. PLATFORM ADMIN DASHBOARD
+
+In addition to provider dashboards, create a separate internal AfriPass platform administration architecture.
+
+This is NOT the same as provider admin.
+
+Conceptually:
+
+```text
+/platform/admin
+```
+
+Platform administrators can manage:
+
+* providers
+* organizations
+* approvals
+* subscriptions
+* plans
+* platform usage
+* abuse detection
+* system health
+* audit events
+* provider suspension
+* API incidents
+* support cases
+
+Provider administrators must never have access to platform administration.
+
+---
+
+# 39. PLATFORM ADMIN ROLES
+
+Support:
+
+```text
+PLATFORM_OWNER
+PLATFORM_ADMIN
+COMPLIANCE_ADMIN
+SECURITY_ADMIN
+SUPPORT_ADMIN
+```
+
+Use strict RBAC.
+
+---
+
+# 40. PROVIDER APPROVAL WORKFLOW
+
+A production provider should pass through:
+
+```text
+Registration
+↓
+Email Verification
+↓
+Business Information
+↓
+Review
+↓
+Approval
+↓
+Subscription
+↓
+API Activation
+↓
+Production Access
+```
+
+Do not automatically mark organizations as approved.
+
+---
+
+# 41. PROVIDER SUSPENSION
+
+Platform administrators must be able to suspend a provider.
+
+When suspended:
+
+```text
+Production API access
+↓
+Disabled
+```
+
+Existing credentials should be evaluated according to their issuer/revocation policy.
+
+Do not silently delete provider data.
+
+Record:
+
+```text
+suspended_at
+suspended_by
+reason
+```
+
+---
+
+# 42. SECURITY CENTER
+
+Create:
+
+```text
+/provider/security
+```
+
+Show:
+
+* active sessions
+* recent logins
+* password changes
+* MFA status
+* API key activity
+* suspicious activity
+* security events
+
+Add architecture for future:
+
+```text
+MFA
+Passkeys
+SSO
+Enterprise SSO
+IP restrictions
+Device/session management
+```
+
+Do not implement fake security features.
+
+---
+
+# 43. MFA-READY ARCHITECTURE
+
+Sensitive provider actions should support step-up authentication.
+
+Examples:
+
+* Creating API keys
+* Revoking credentials
+* Changing admin permissions
+* Changing billing
+* Changing signing configuration
+
+---
+
+# 44. NOTIFICATION CENTER
+
+Create:
+
+```text
+/notifications
+```
+
+Notifications:
+
+```text
+Verification request received
+Credential issued
+Credential expiring
+Credential revoked
+API usage approaching limit
+Subscription renewal
+Payment failure
+Team invitation
+Security alert
+Provider approval
+Provider suspension
+```
+
+Support read/unread states.
+
+---
+
+# 45. EMAIL ARCHITECTURE
+
+Create backend abstractions:
+
+```text
+EmailService
+NotificationService
+TemplateService
+```
+
+Potential future providers:
+
+```text
+Resend
+SendGrid
+Amazon SES
+Postmark
+```
+
+Do not hardcode email delivery directly into business logic.
+
+---
+
+# 46. WEBHOOK SYSTEM
+
+Providers should be able to configure webhook endpoints.
+
+Events:
+
+```text
+credential.issued
+credential.revoked
+credential.expired
+verification.requested
+verification.completed
+proof.verified
+subscription.updated
+api.limit.warning
+```
+
+Webhook security:
+
+* signing secret
+* event ID
+* timestamp
+* signature
+* retry mechanism
+* idempotency
+
+---
+
+# 47. IDEMPOTENCY
+
+Production API endpoints that create financial credentials, verification requests, payments, or other important resources should support idempotency where appropriate.
+
+Example:
+
+```text
+Idempotency-Key
+```
+
+The backend must prevent accidental duplicate issuance.
+
+---
+
+# 48. RATE LIMITING
+
+Implement rate limiting at:
+
+```text
+IP
+User
+Organization
+API key
+Endpoint
+```
+
+Different plans can have different limits.
+
+Example:
+
+```text
+Sandbox:
+100 requests/day
+
+Starter:
+10,000/month
+
+Professional:
+100,000/month
+
+Enterprise:
+Custom
+```
+
+These are examples only.
+
+Actual limits must come from backend configuration.
+
+---
+
+# 49. API VERSIONING
+
+Use:
+
+```text
+/api/v1/
+```
+
+Do not build an API that cannot evolve.
+
+Future:
+
+```text
+/api/v2/
+```
+
+should be possible without breaking v1 consumers.
+
+---
+
+# 50. BACKEND ARCHITECTURE
+
+The production backend should be written in Go.
+
+Suggested architecture:
+
+```text
+backend/
+
+cmd/
+  server/
+    main.go
+
+internal/
+
+auth/
+users/
+organizations/
+providers/
+members/
+roles/
+permissions/
+
+credentials/
+claims/
+attestations/
+issuers/
+revocations/
+
+verification/
+verification_requests/
+verification_sessions/
+
+proofs/
+midnight/
+
+transactions/
+
+consent/
+
+subscriptions/
+billing/
+plans/
+invoices/
+
+api_keys/
+webhooks/
+notifications/
+email/
+
+audit/
+security/
+
+platform_admin/
+
+database/
+config/
+middleware/
+
+pkg/
+  crypto/
+  response/
+  validation/
+  logging/
+
+migrations/
+
+api/
+  openapi/
+
+tests/
+
+Dockerfile
+docker-compose.yml
+go.mod
+.env.example
+README.md
+```
+
+---
+
+# 51. DATABASE
+
+Use PostgreSQL for production.
+
+Important tables/entities:
+
+```text
+users
+organizations
+organization_members
+roles
+permissions
+providers
+
+credentials
+credential_claims
+attestations
+credential_revocations
+
+verification_requests
+verification_sessions
+verification_results
+
+proofs
+consents
+
+api_keys
+api_usage
+api_rate_limits
+
+subscriptions
+subscription_plans
+subscription_events
+invoices
+
+webhooks
+webhook_deliveries
+
+audit_events
+security_events
+
+notifications
+email_events
+
+transaction_evidence
+
+issuer_keys
+credential_signatures
+
+platform_admins
+provider_reviews
+provider_suspensions
+```
+
+Every tenant-owned table must have a clear organization relationship where appropriate.
+
+---
+
+# 52. TENANT ISOLATION
+
+This is mandatory.
+
+Every backend request involving provider data must establish:
+
+```text
+Authenticated identity
+↓
+Organization membership
+↓
+Role
+↓
+Permission
+↓
+Tenant scope
+```
+
+Never trust:
+
+```text
+organization_id
+```
+
+sent by the browser without validating that the authenticated user belongs to that organization.
+
+---
+
+# 53. AUTHENTICATION
+
+Implement production-ready authentication.
+
+Endpoints:
+
+```text
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+POST /api/v1/auth/logout
+POST /api/v1/auth/refresh
+POST /api/v1/auth/verify-email
+POST /api/v1/auth/forgot-password
+POST /api/v1/auth/reset-password
+```
+
+Use secure password hashing such as:
+
+```text
+Argon2id
+```
+
+or another strong production-approved password hashing strategy.
+
+Use secure sessions/tokens.
+
+Never place authentication secrets in React.
+
+---
+
+# 54. PROVIDER ENDPOINTS
+
+Conceptually:
+
+```text
+POST   /api/v1/providers/register
+GET    /api/v1/providers/me
+PATCH  /api/v1/providers/me
+GET    /api/v1/providers/me/status
+```
+
+---
+
+# 55. TEAM ENDPOINTS
+
+```text
+GET    /api/v1/provider/members
+POST   /api/v1/provider/members/invite
+POST   /api/v1/provider/members
+PATCH  /api/v1/provider/members/{id}
+DELETE /api/v1/provider/members/{id}
+POST   /api/v1/provider/members/{id}/suspend
+```
+
+Every endpoint must enforce organization boundaries.
+
+---
+
+# 56. CREDENTIAL ENDPOINTS
+
+```text
+POST /api/v1/provider/credentials
+GET  /api/v1/provider/credentials
+GET  /api/v1/provider/credentials/{id}
+POST /api/v1/provider/credentials/{id}/revoke
+```
+
+---
+
+# 57. VERIFICATION ENDPOINTS
+
+```text
+POST /api/v1/verification-requests
+GET  /api/v1/verification-requests
+GET  /api/v1/verification-requests/{id}
+
+POST /api/v1/verification-sessions
+POST /api/v1/proofs/verify
+```
+
+---
+
+# 58. SUBSCRIPTION ENDPOINTS
+
+```text
+GET  /api/v1/provider/subscription
+GET  /api/v1/provider/plans
+POST /api/v1/provider/subscription/checkout
+POST /api/v1/provider/subscription/cancel
+POST /api/v1/provider/subscription/change
+GET  /api/v1/provider/invoices
+```
+
+Payment confirmation must happen through the backend/payment provider webhook.
+
+Never trust:
+
+```text
+frontend says payment = successful
+```
+
+as authoritative.
+
+---
+
+# 59. API MANAGEMENT ENDPOINTS
+
+```text
+POST   /api/v1/provider/api-keys
+GET    /api/v1/provider/api-keys
+POST   /api/v1/provider/api-keys/{id}/rotate
+DELETE /api/v1/provider/api-keys/{id}
+GET    /api/v1/provider/api-usage
+```
+
+---
+
+# 60. WEBHOOK ENDPOINTS
+
+```text
+POST /api/v1/provider/webhooks
+GET  /api/v1/provider/webhooks
+PATCH /api/v1/provider/webhooks/{id}
+DELETE /api/v1/provider/webhooks/{id}
+POST /api/v1/provider/webhooks/{id}/test
+```
+
+---
+
+# 61. BILLING WEBHOOKS
+
+Payment providers should notify the backend.
+
+Example:
+
+```text
+payment successful
+payment failed
+subscription renewed
+subscription canceled
+subscription expired
+```
+
+The backend updates subscription state.
+
+Never rely solely on browser redirects.
+
+---
+
+# 62. MIDNIGHT INTEGRATION
+
+KEEP MIDNIGHT.
+
+Midnight remains the privacy/ZK layer.
+
+Architecture:
+
+```text
+React / TypeScript
+       ↓
+AfriPass Go API
+       ↓
+Credential / Attestation Service
+       ↓
+Midnight Integration
+       ↓
+Compact Contract
+       ↓
+ZK Proof
+       ↓
+Verifier
+```
+
+Do not move private issuer signing keys into the browser.
+
+Do not replace Midnight with another blockchain.
+
+---
+
+# 63. MIDNIGHT / BACKEND BOUNDARY
+
+Clearly separate:
+
+### Backend responsibilities
+
+* provider authentication
+* organization management
+* credential lifecycle
+* issuer attestation
+* authorization
+* subscriptions
+* API access
+* audit
+* verification request management
+* transaction evidence
+* provider trust
+
+### Midnight responsibilities
+
+* private witness
+* ZK circuits
+* privacy-preserving proof
+* proof verification
+* required ledger state
+
+Do not turn PostgreSQL into a replacement for Midnight's privacy layer.
+
+---
+
+# 64. PRIVATE DATA PRINCIPLE
+
+AfriPass must NOT become a giant centralized financial-history database.
+
+Store only what is necessary.
+
+Prefer:
+
+```text
+commitments
+hashes
+references
+attestations
+metadata
+proofs
+verification results
+```
+
+over storing complete financial histories.
+
+---
+
+# 65. PROVIDER INTEGRATIONS
+
+Create an adapter architecture.
+
+Example:
+
+```text
+ProviderAdapter
+
+BankAdapter
+FintechAdapter
+LenderAdapter
+MicrofinanceAdapter
+CooperativeAdapter
+EmployerAdapter
+```
+
+Provider-specific data should be normalized into AfriPass credential structures.
+
+Do not hardcode one bank.
+
+Support future:
+
+* REST APIs
+* Webhooks
+* secure file import
+* OAuth-style provider authorization where appropriate
+* enterprise integrations
+
+---
+
+# 66. REAL-WORLD DATA VERIFICATION
+
+The system must distinguish:
+
+```text
+User-provided claim
+```
+
+from:
+
+```text
+Provider-attested claim
+```
+
+from:
+
+```text
+Cryptographically verified proof
+```
+
+These are three different trust levels.
+
+Example UI:
+
+```text
+User Claim
+Unverified
+
+Provider Attestation
+✓ Valid
+
+Credential
+✓ Active
+
+Midnight Proof
+✓ Cryptographically Valid
+```
+
+---
+
+# 67. PRODUCTION USER EXPERIENCE
+
+The user should not need to understand blockchain terminology to use AfriPass.
+
+Explain complex cryptography in simple language.
+
+Example:
+
+Instead of:
+
+```text
+Witness commitment circuit successfully executed
+```
+
+prefer:
+
+```text
+Your proof was generated without revealing your underlying financial information.
+```
+
+---
+
+# 68. STATUS SYSTEM
+
+Use explicit statuses.
+
+Provider:
+
+```text
+Pending
+Approved
+Suspended
+Rejected
+Deactivated
+```
+
+Credential:
+
+```text
+Pending
+Attested
+Active
+Expired
+Revoked
+Suspended
+Invalid
+```
+
+Verification:
+
+```text
+Pending
+Approved
+Verified
+Rejected
+Expired
+```
+
+Subscription:
+
+```text
+Trial
+Active
+Past Due
+Canceled
+Expired
+Suspended
+```
+
+API:
+
+```text
+Active
+Restricted
+Revoked
+Expired
+```
+
+---
+
+# 69. ERROR HANDLING
+
+Support:
+
+```text
+401 Unauthorized
+403 Forbidden
+404 Not Found
+409 Conflict
+422 Validation Error
+429 Rate Limited
+500 Internal Error
+503 Service Unavailable
+```
+
+Never expose stack traces or secrets.
+
+---
+
+# 70. OBSERVABILITY
+
+Production backend should support:
+
+* structured logging
+* metrics
+* request IDs
+* tracing-ready architecture
+* health checks
+* readiness checks
+* error monitoring
+
+Endpoints:
+
+```text
+GET /health
+GET /ready
+```
+
+---
+
+# 71. DATABASE MIGRATIONS
+
+Use versioned migrations.
+
+Never modify production schema manually.
+
+Migration system should support:
+
+```text
+up
+down
+version
+status
+```
+
+---
+
+# 72. BACKUPS / RECOVERY ARCHITECTURE
+
+Design for:
+
+* automated database backups
+* retention policies
+* restore testing
+* disaster recovery
+* database replication where appropriate
+
+Do not claim backups are operational until actually configured.
+
+---
+
+# 73. SECURITY HEADERS
+
+Production API should support appropriate security headers and secure CORS configuration.
+
+Never use:
+
+```text
+Access-Control-Allow-Origin: *
+```
+
+for authenticated production endpoints unless there is a deliberate security reason.
+
+---
+
+# 74. SECRETS MANAGEMENT
+
+Never commit:
+
+* database passwords
+* JWT secrets
+* API secrets
+* provider signing keys
+* payment secrets
+* webhook secrets
+* Midnight private keys
+
+Use environment variables locally and a proper secret-management solution in production.
+
+Issuer signing keys should preferably use:
+
+```text
+KMS
+HSM
+Dedicated signing service
+```
+
+or another secure key-management architecture.
+
+---
+
+# 75. FRONTEND ARCHITECTURE
+
+Keep UI separate from infrastructure.
+
+Create:
+
+```text
+services/
+
+authService
+providerService
+organizationService
+memberService
+credentialService
+attestationService
+verificationService
+proofService
+subscriptionService
+billingService
+apiKeyService
+webhookService
+notificationService
+auditService
+midnightService
+```
+
+Components should consume these services instead of making random API calls.
+
+---
+
+# 76. FRONTEND ROUTES
+
+Consumer:
+
+```text
+/
+ /passport
+ /passport/credentials
+ /requests
+ /consents
+ /activity
+ /providers
+ /settings
+```
+
+Provider:
+
+```text
+/provider/login
+/provider/register
+/provider/dashboard
+/provider/credentials
+/provider/credentials/issue
+/provider/verifications
+/provider/verify
+/provider/team
+/provider/organization
+/provider/api
+/provider/api/usage
+/provider/developer
+/provider/billing
+/provider/invoices
+/provider/security
+/provider/audit
+/provider/settings
+```
+
+Platform:
+
+```text
+/platform/admin
+/platform/providers
+/platform/subscriptions
+/platform/audit
+/platform/security
+```
+
+Protect provider and platform routes.
+
+---
+
+# 77. PROVIDER DASHBOARD SIDEBAR
+
+Use:
+
+```text
+Dashboard
+
+Credentials
+├── All Credentials
+├── Issue Credential
+└── Revoked
+
+Verification
+├── Requests
+├── Verify Proof
+└── History
+
+Team
+├── Users
+├── Roles
+└── Invitations
+
+Developer
+├── API Keys
+├── API Usage
+├── Webhooks
+└── API Documentation
+
+Billing
+├── Current Plan
+├── Change Plan
+└── Invoices
+
+Organization
+
+Security
+
+Audit Logs
+
+Settings
+```
+
+---
+
+# 78. ADMIN DASHBOARD
+
+Admin should see:
+
+```text
+Organization Overview
+
+Team Members
+
+Credentials
+
+Verification Activity
+
+API Usage
+
+Subscription
+
+Security
+
+Audit Logs
+```
+
+The admin must NOT automatically receive access to private financial values simply because they are an admin.
+
+Privacy boundaries still apply.
+
+---
+
+# 79. API DEVELOPER EXPERIENCE
+
+Provide API documentation inside AfriPass.
+
+Show:
+
+```text
+Authentication
+Credentials
+Verification Requests
+Proof Verification
+Webhooks
+Errors
+Rate Limits
+API Versions
+Examples
+```
+
+Include copyable examples eventually.
+
+Do not expose real API keys in documentation.
+
+---
+
+# 80. SDK-READY API
+
+Design the Go API so AfriPass can later provide official SDKs.
+
+Potential future SDKs:
+
+```text
+JavaScript / TypeScript
+Python
+Go
+PHP
+Java
+```
+
+The API contract should be stable and documented with OpenAPI.
+
+---
+
+# 81. WEBHOOK RELIABILITY
+
+Webhook delivery should support:
+
+```text
+retry
+exponential backoff
+signature verification
+idempotency
+delivery history
+failure status
+manual retry
+```
+
+Provider dashboard:
+
+```text
+Webhook Delivery
+
+✓ Delivered
+✕ Failed
+↻ Retry
+```
+
+---
+
+# 82. SUPPORT / HELP CENTER
+
+Add a provider support area.
+
+Possible:
+
+```text
+/provider/support
+```
+
+Allow:
+
+* documentation
+* API guides
+* security guides
+* integration guides
+* contact support
+* incident status
+
+Do not implement fake support tickets unless backend support exists.
+
+---
+
+# 83. INCIDENT / STATUS SYSTEM
+
+Production architecture should support a future:
+
+```text
+/status
+```
+
+page.
+
+Possible services:
+
+```text
+AfriPass API
+Verification Service
+Credential Service
+Midnight Integration
+Webhook Service
+```
+
+Statuses:
+
+```text
+Operational
+Degraded
+Partial Outage
+Major Outage
+```
+
+---
+
+# 84. COMPLIANCE-READY ARCHITECTURE
+
+Do not claim AfriPass is legally compliant with any specific regulation unless actually assessed.
+
+However, design for:
+
+* data minimization
+* consent
+* auditability
+* access control
+* retention policies
+* deletion workflows
+* incident response
+* data export
+* privacy controls
+
+---
+
+# 85. DATA RETENTION
+
+Create configurable retention policies.
 
 Examples:
 
 ```text
-- Record demo video
-- Add demo video URL
-- Push final commit
-- Submit Level 2 on Rise In
+Audit records
+Verification sessions
+Webhook logs
+API logs
+Expired credentials
+Revoked credentials
+```
+
+Do not delete records simply because they are old if legal/audit requirements require retention.
+
+Make retention configurable by policy.
+
+---
+
+# 86. DATA EXPORT
+
+Allow organization administrators to export appropriate organization-level data.
+
+Examples:
+
+```text
+Audit logs
+Credential records
+Verification history
+API usage
+Invoices
+```
+
+Exports must respect tenant isolation and user privacy.
+
+---
+
+# 87. DATA DELETION
+
+Design deletion workflows carefully.
+
+Do not allow a normal admin to delete critical audit records.
+
+Use states such as:
+
+```text
+ACTIVE
+DELETION_REQUESTED
+DELETED
+```
+
+Where permanent deletion is appropriate.
+
+---
+
+# 88. PRIVACY-FIRST DEFAULTS
+
+Default to minimum disclosure.
+
+Never make:
+
+```text
+full income
+full transactions
+full account history
+```
+
+the default verification output.
+
+Default:
+
+```text
+Claim satisfied
 ```
 
 ---
 
-# MOST IMPORTANT LEVEL 2 PRINCIPLE
+# 89. NO FAKE PRODUCTION DATA
 
-Do not turn AfriPass into a generic blockchain dashboard.
-
-The purpose of Level 2 is to demonstrate:
+Development and sandbox data must have obvious labels:
 
 ```text
-                 AFRIPASS
-                    │
-                    ▼
-               LACE WALLET
-                    │
-                    ▼
-            PRIVATE INPUT
-                    │
-                    ▼
-             MIDNIGHT.JS
-                    │
-                    ▼
-        LOCAL ZK PROOF GENERATION
-                    │
-                    ▼
-           MIDNIGHT PREPROD
-                    │
-                    ▼
-             VERIFIED RESULT
+DEMO
+SYNTHETIC
+SANDBOX
+TEST
 ```
 
-The user experience should communicate:
+Never display fictional providers as real financial institutions.
 
-> **Prove what matters. Keep what matters private.**
+Never fabricate:
 
-The application should visually and technically demonstrate that principle.
+* bank transactions
+* signatures
+* attestations
+* production API usage
+* payments
+* subscriptions
+* provider approval
+* cryptographic verification
 
-Do not over-engineer Level 2.
+---
 
-Prioritize:
+# 90. FRONTEND ENVIRONMENT
 
-1. Working Lace connection.
-2. Working Midnight.js integration.
-3. Working circuit call.
-4. Local proof generation.
-5. Successful Preprod transaction.
-6. Privacy-preserving UX.
-7. Light/dark mode.
-8. Privacy-focused imagery.
-9. Professional AfriPass presentation.
-10. Complete Rise In requirements.
+Use:
+
+```text
+Development
+Staging
+Production
+```
+
+Example:
+
+```text
+VITE_API_URL
+VITE_MIDNIGHT_NETWORK
+VITE_APP_ENV
+```
+
+Never put server secrets in VITE environment variables.
+
+---
+
+# 91. LIGHT AND DARK MODE
+
+Preserve the existing Light/Dark mode.
+
+All new screens must work correctly in:
+
+```text
+Light
+Dark
+```
+
+---
+
+# 92. MOBILE-FIRST PROVIDER EXPERIENCE
+
+Provider dashboard must work on:
+
+```text
+Desktop
+Tablet
+Mobile
+```
+
+Verification should be particularly optimized for mobile because QR verification may happen on phones.
+
+---
+
+# 93. ACCESSIBILITY
+
+Use:
+
+* semantic HTML
+* keyboard navigation
+* accessible forms
+* focus states
+* screen reader support
+* appropriate ARIA
+* sufficient contrast
+
+Never communicate status using color alone.
+
+---
+
+# 94. PERFORMANCE
+
+Provider dashboards must support organizations with large datasets.
+
+Use:
+
+* pagination
+* server-side filtering
+* server-side sorting
+* search
+* lazy loading
+* caching where appropriate
+
+Do not load thousands of credentials into the browser at once.
+
+---
+
+# 95. SEARCH
+
+Provider users should be able to search:
+
+Credentials:
+
+```text
+Credential ID
+Subject reference
+Credential type
+Status
+```
+
+Verification:
+
+```text
+Request ID
+Status
+Date
+Claim type
+```
+
+Do not expose unnecessary personal information.
+
+---
+
+# 96. AUDITABLE CRYPTOGRAPHIC PROVENANCE
+
+Every trusted credential should be traceable through:
+
+```text
+Provider
+↓
+Attestation
+↓
+Credential
+↓
+Proof
+↓
+Verification
+```
+
+The verifier should be able to establish:
+
+* who issued the credential
+* whether issuer is approved
+* whether credential is valid
+* whether credential has expired
+* whether credential has been revoked
+* whether proof is cryptographically valid
+
+without receiving the underlying financial history.
+
+---
+
+# 97. COMPLETE PROVIDER FLOW
+
+```text
+Provider registers
+        ↓
+Email verification
+        ↓
+Business review
+        ↓
+Provider approved
+        ↓
+Select subscription
+        ↓
+Payment confirmed
+        ↓
+API activated
+        ↓
+Admin enters dashboard
+        ↓
+Admin creates/invites staff
+        ↓
+Assign roles
+        ↓
+Developer creates API key
+        ↓
+Integrate provider system
+        ↓
+Issue credential
+        ↓
+Credential attested
+        ↓
+User receives credential
+        ↓
+User gives consent
+        ↓
+Midnight generates ZK proof
+        ↓
+Verifier requests proof
+        ↓
+Proof verified
+        ↓
+Provider receives minimum required result
+```
+
+---
+
+# 98. COMPLETE USER FLOW
+
+```text
+User
+ ↓
+Connect Lace
+ ↓
+Create AfriPass
+ ↓
+Receive provider credentials
+ ↓
+View credential provenance
+ ↓
+Receive verification request
+ ↓
+Review request
+ ↓
+Give consent
+ ↓
+Select credential
+ ↓
+Midnight generates proof
+ ↓
+Generate QR / verification session
+ ↓
+Provider verifies
+ ↓
+Result returned
+ ↓
+Underlying financial information remains protected
+```
+
+---
+
+# 99. COMPLETE PLATFORM FLOW
+
+```text
+AfriPass Platform
+        ↓
+Provider Network
+        ↓
+Organizations
+        ↓
+Subscriptions
+        ↓
+API Access
+        ↓
+Credential Issuance
+        ↓
+Attestations
+        ↓
+User Passports
+        ↓
+Consent
+        ↓
+Midnight ZK
+        ↓
+Verification
+        ↓
+Audit / Analytics
+```
+
+---
+
+# 100. PRODUCTION-READINESS CHECKLIST
+
+The system should eventually satisfy:
+
+### Multi-tenancy
+
+[ ] Every provider has an isolated organization
+
+[ ] Tenant boundaries are enforced by backend
+
+[ ] Cross-tenant access is impossible
+
+[ ] Organization admins exist
+
+[ ] Staff members belong to organizations
+
+[ ] Roles and permissions are enforced
+
+### Provider
+
+[ ] Provider registration
+
+[ ] Provider approval
+
+[ ] Provider dashboard
+
+[ ] Organization profile
+
+[ ] Team management
+
+[ ] Issuer capability
+
+[ ] Verifier capability
+
+### Credentials
+
+[ ] Real provider attestation
+
+[ ] Credential lifecycle
+
+[ ] Expiration
+
+[ ] Revocation
+
+[ ] Provenance
+
+[ ] Cryptographic integrity
+
+### Verification
+
+[ ] Verification requests
+
+[ ] User consent
+
+[ ] Midnight proof generation
+
+[ ] Proof verification
+
+[ ] QR verification
+
+[ ] Expiring sessions
+
+[ ] Minimum disclosure
+
+### API
+
+[ ] API keys
+
+[ ] API scopes
+
+[ ] API rotation
+
+[ ] API revocation
+
+[ ] API usage
+
+[ ] API quotas
+
+[ ] Rate limits
+
+[ ] API versioning
+
+[ ] OpenAPI documentation
+
+### SaaS
+
+[ ] Subscription plans
+
+[ ] Subscription status
+
+[ ] Usage limits
+
+[ ] Billing abstraction
+
+[ ] Invoices
+
+[ ] Payment webhook architecture
+
+[ ] Sandbox
+
+[ ] Production environment
+
+### Security
+
+[ ] Secure authentication
+
+[ ] Password hashing
+
+[ ] Session management
+
+[ ] MFA-ready architecture
+
+[ ] Secure API keys
+
+[ ] Signing-key protection
+
+[ ] Audit logs
+
+[ ] Security events
+
+[ ] Tenant isolation
+
+[ ] Rate limiting
+
+[ ] Secure CORS
+
+### Operations
+
+[ ] Health checks
+
+[ ] Readiness checks
+
+[ ] Structured logs
+
+[ ] Metrics-ready architecture
+
+[ ] Database migrations
+
+[ ] Backup strategy
+
+[ ] Error monitoring-ready
+
+### UX
+
+[ ] Light mode
+
+[ ] Dark mode
+
+[ ] Mobile responsive
+
+[ ] Accessible
+
+[ ] Loading states
+
+[ ] Error states
+
+[ ] Notifications
+
+[ ] Provider onboarding
+
+[ ] Developer portal
+
+---
+
+# 101. CRITICAL SECURITY RULE
+
+Never implement:
+
+```text
+User enters income
+↓
+Frontend says verified
+↓
+ZK proof
+↓
+Lender
+```
+
+Implement:
+
+```text
+Approved Provider
+↓
+Provider Attestation
+↓
+Financial Credential
+↓
+Private User Data
+↓
+Midnight ZK Proof
+↓
+Authorized Verifier
+↓
+Minimum Disclosure
+```
+
+Provider attestation establishes provenance.
+
+Midnight establishes the privacy-preserving proof of the required condition.
+
+These are separate trust layers.
+
+---
+
+# 102. IMPLEMENTATION ORDER
+
+Do NOT attempt to build every feature at once.
+
+Implement in phases.
+
+## PHASE 1 — GO BACKEND FOUNDATION
+
+Build:
+
+* Go server
+* PostgreSQL
+* migrations
+* configuration
+* logging
+* error handling
+* health checks
+* Docker
+* OpenAPI
+
+---
+
+## PHASE 2 — AUTHENTICATION
+
+Build:
+
+* registration
+* login
+* logout
+* refresh
+* email verification
+* password reset
+* secure password hashing
+* sessions/tokens
+
+---
+
+## PHASE 3 — MULTI-TENANCY
+
+Build:
+
+* organizations
+* organization members
+* roles
+* permissions
+* tenant middleware
+* tenant isolation
+
+This phase is extremely important.
+
+---
+
+## PHASE 4 — PROVIDER ONBOARDING
+
+Build:
+
+* provider registration
+* provider review
+* provider approval
+* provider status
+* provider dashboard
+
+---
+
+## PHASE 5 — TEAM MANAGEMENT
+
+Build:
+
+* invite staff
+* accept invitation
+* create users
+* assign roles
+* deactivate users
+* role permissions
+
+---
+
+## PHASE 6 — CREDENTIAL SYSTEM
+
+Build:
+
+* credentials
+* claims
+* attestations
+* issuer identity
+* expiration
+* revocation
+* provenance
+* transaction evidence
+
+---
+
+## PHASE 7 — VERIFICATION
+
+Build:
+
+* verification requests
+* verification sessions
+* consent
+* proof verification
+* verification history
+* QR verification
+
+---
+
+## PHASE 8 — MIDNIGHT INTEGRATION
+
+Connect the existing Midnight functionality to the backend architecture.
+
+Do NOT rewrite the existing Compact/ZK implementation unnecessarily.
+
+---
+
+## PHASE 9 — API PLATFORM
+
+Build:
+
+* API keys
+* scopes
+* rotation
+* rate limits
+* quotas
+* usage tracking
+* API documentation
+* webhooks
+
+---
+
+## PHASE 10 — SUBSCRIPTIONS
+
+Build:
+
+* plans
+* subscriptions
+* billing abstraction
+* invoices
+* payment provider integration
+* payment webhooks
+* subscription enforcement
+
+---
+
+## PHASE 11 — SECURITY
+
+Add:
+
+* MFA-ready architecture
+* secure key management
+* audit logs
+* security events
+* rate limiting
+* session management
+* tenant security testing
+
+---
+
+## PHASE 12 — PRODUCTION HARDENING
+
+Add:
+
+* observability
+* monitoring
+* backups
+* disaster recovery strategy
+* performance optimization
+* database indexing
+* load testing
+* security testing
+* API integration testing
+
+---
+
+# 103. DEVELOPMENT RULE
+
+At the beginning of each phase:
+
+1. Inspect the existing repository.
+2. Understand the existing architecture.
+3. Identify what already exists.
+4. Do NOT duplicate existing functionality.
+5. Reuse existing Midnight integration.
+6. Implement only the necessary new layer.
+7. Run tests.
+8. Run linting.
+9. Verify the existing Level 2 functionality still works.
+10. Document what changed.
+
+---
+
+# 104. DO NOT MAKE UNJUSTIFIED ARCHITECTURAL CHANGES
+
+If an existing implementation works, preserve it.
+
+Do not replace:
+
+```text
+Midnight
+```
+
+with another blockchain.
+
+Do not replace:
+
+```text
+React/TypeScript
+```
+
+unless absolutely necessary.
+
+Do not replace existing working UI components unnecessarily.
+
+Do not introduce microservices prematurely.
+
+The initial Go backend should preferably be a **well-structured modular monolith**.
+
+Design clean service boundaries so individual components can later be extracted if scale requires it.
+
+---
+
+# 105. RECOMMENDED PRODUCTION ARCHITECTURE
+
+Start with:
+
+```text
+                    ┌──────────────────────┐
+                    │      AfriPass        │
+                    │   React / Next.js    │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │      Go API          │
+                    │   Modular Monolith   │
+                    └──────────┬───────────┘
+                               │
+          ┌────────────────────┼─────────────────────┐
+          │                    │                     │
+          ▼                    ▼                     ▼
+   Authentication       Organization/Tenant      Credentials
+          │                    │                     │
+          │                    │                     ▼
+          │                    │                Attestation
+          │                    │                     │
+          │                    │                     ▼
+          │                    │                 Verification
+          │                    │                     │
+          │                    │                     ▼
+          │                    │              Midnight Service
+          │                    │                     │
+          └────────────────────┼─────────────────────┘
+                               │
+                               ▼
+                         PostgreSQL
+                               │
+                               ▼
+                    Audit / Usage / Billing
+```
+
+Supporting infrastructure:
+
+```text
+Go API
+ ├── PostgreSQL
+ ├── Redis (future)
+ ├── Object Storage (future)
+ ├── KMS/HSM (production)
+ ├── Email Service
+ ├── Payment Provider
+ ├── Monitoring
+ └── Midnight Network
+```
+
+Do not introduce Redis or other infrastructure unless actually needed.
+
+---
+
+# 106. FINAL PRODUCT POSITIONING
+
+AfriPass should communicate:
+
+## AfriPass
+
+### Your financial credentials. Your privacy.
+
+For providers:
+
+**ISSUE. VERIFY. PROTECT.**
+
+For users:
+
+**PROVE MORE. REVEAL LESS.**
+
+For developers:
+
+**ONE API FOR PRIVACY-PRESERVING FINANCIAL VERIFICATION.**
+
+Core infrastructure:
+
+```text
+Provider
+    ↓
+Attestation
+    ↓
+Credential
+    ↓
+Consent
+    ↓
+Midnight ZK Proof
+    ↓
+Verification
+    ↓
+Minimum Disclosure
+```
+
+AfriPass is a:
+
+**privacy-preserving financial credential and verification infrastructure layer connecting users and trusted financial-service providers.**
+
+---
+
+# 107. FINAL ACCEPTANCE CRITERIA
+
+The production foundation is successful when:
+
+[ ] Existing Level 2 still works
+
+[ ] Lace wallet still works
+
+[ ] Midnight.js still works
+
+[ ] Compact contract still works
+
+[ ] Existing ZK proof flow still works
+
+[ ] Go backend is running
+
+[ ] PostgreSQL is connected
+
+[ ] Authentication works
+
+[ ] Multi-tenancy works
+
+[ ] Provider organizations exist
+
+[ ] Provider dashboards are isolated
+
+[ ] Organization admins can create/invite users
+
+[ ] Roles and permissions are enforced by backend
+
+[ ] Provider approval exists
+
+[ ] Credentials have provenance
+
+[ ] Attestations are cryptographically represented
+
+[ ] Credentials support expiration
+
+[ ] Credentials support revocation
+
+[ ] Verification requests work
+
+[ ] User consent works
+
+[ ] Midnight proof remains the privacy layer
+
+[ ] Verification results minimize disclosure
+
+[ ] QR verification architecture exists
+
+[ ] API keys work
+
+[ ] API scopes work
+
+[ ] API usage is tracked
+
+[ ] API quotas exist
+
+[ ] Rate limiting exists
+
+[ ] Sandbox exists
+
+[ ] Production environment exists
+
+[ ] Subscription plans exist
+
+[ ] Subscription status is enforced by backend
+
+[ ] Billing architecture exists
+
+[ ] Invoices exist
+
+[ ] Payment webhook architecture exists
+
+[ ] Webhooks exist
+
+[ ] Audit logs exist
+
+[ ] Security events exist
+
+[ ] Platform administration exists
+
+[ ] Provider suspension exists
+
+[ ] Notifications exist
+
+[ ] OpenAPI documentation exists
+
+[ ] Health checks exist
+
+[ ] Structured logging exists
+
+[ ] Tenant isolation has tests
+
+[ ] No frontend secrets exist
+
+[ ] No fake production verification exists
+
+[ ] No fabricated transaction signatures exist
+
+[ ] No private financial history is unnecessarily centralized
+
+[ ] Light mode works
+
+[ ] Dark mode works
+
+[ ] Mobile works
+
+[ ] Accessibility is considered
+
+[ ] Development/Sandbox/Staging/Production are separated
+
+---
+
+# 108. MOST IMPORTANT IMPLEMENTATION PRINCIPLE
+
+Build AfriPass as a **network and platform**, not just a demo.
+
+A provider should be able to:
+
+```text
+Create Organization
+        ↓
+Subscribe
+        ↓
+Get API Access
+        ↓
+Create Team
+        ↓
+Assign Roles
+        ↓
+Integrate API
+        ↓
+Issue Credentials
+        ↓
+Request Verification
+        ↓
+Verify ZK Proofs
+        ↓
+Monitor Usage
+        ↓
+Manage Billing
+        ↓
+Audit Activity
+```
+
+A user should be able to:
+
+```text
+Create Passport
+        ↓
+Receive Credentials
+        ↓
+See Trusted Issuers
+        ↓
+Receive Verification Request
+        ↓
+Give Consent
+        ↓
+Generate Midnight ZK Proof
+        ↓
+Share QR / Proof
+        ↓
+Keep Underlying Financial Data Private
+```
+
+And AfriPass should sit between them as the privacy infrastructure layer:
+
+```text
+          PROVIDERS
+              │
+              │ Attest
+              ▼
+        ┌─────────────┐
+        │   AfriPass  │
+        │ Credential   │
+        │ Verification │
+        │ API Network  │
+        └──────┬──────┘
+               │
+               │ Privacy
+               ▼
+          MIDNIGHT ZK
+               │
+               ▼
+             USERS
+               │
+               ▼
+           VERIFIERS
+```
+
+Build this as a credible foundation for a real financial verification network—not merely as a visual demonstration.
+
+
+Note: No demo coding or hardcoded

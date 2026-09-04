@@ -1,0 +1,66 @@
+openapi: 3.0.3
+info:
+  title: AfriPass Production API
+  description: Privacy-Preserving Financial Credential & Midnight ZK Verification Network REST API
+  version: 1.0.0
+paths:
+  /health:
+    get:
+      summary: Health Check Endpoint
+      responses:
+        '200':
+          description: System operational status
+  /ready:
+    get:
+      summary: Readiness Check Endpoint
+      responses:
+        '200':
+          description: System readiness status
+  /api/v1/auth/login:
+    post:
+      summary: Provider & User Authentication
+      responses:
+        '200':
+          description: JWT token and session
+  /api/v1/providers/register:
+    post:
+      summary: Register Organization as Provider
+      responses:
+        '201':
+          description: Organization created in pending status
+  /api/v1/providers:
+    get:
+      summary: List Approved Financial Providers
+      responses:
+        '200':
+          description: Array of approved providers
+  /api/v1/providers/credentials:
+    post:
+      summary: Issue & Attest Financial Credential
+      responses:
+        '201':
+          description: Attested credential reference
+  /api/v1/credentials:
+    get:
+      summary: List Subject Credentials
+      responses:
+        '200':
+          description: Array of credentials
+  /api/v1/credentials/revoke/{id}:
+    post:
+      summary: Revoke Credential
+      responses:
+        '200':
+          description: Revoked credential state
+  /api/v1/proofs/verify:
+    post:
+      summary: Verify Midnight ZK Proof Payload
+      responses:
+        '200':
+          description: Verification result without underlying data disclosure
+  /api/v1/provider/api-keys:
+    post:
+      summary: Create Hashed Provider API Key
+      responses:
+        '201':
+          description: Created key with masked secret
