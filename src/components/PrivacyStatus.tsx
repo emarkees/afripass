@@ -1,7 +1,6 @@
-'use client';
-
 import React from 'react';
-import { Lock, Cpu, CheckCircle2, ShieldCheck, Loader2 } from 'lucide-react';
+import { Lock, ShieldCheck, Loader2 } from 'lucide-react';
+import { PrivacyBadge } from './PrivacyBadge';
 
 interface PrivacyStatusProps {
   proofState: 'idle' | 'generating' | 'submitting' | 'success' | 'error';
@@ -11,15 +10,12 @@ interface PrivacyStatusProps {
 export const PrivacyStatus: React.FC<PrivacyStatusProps> = ({ proofState, txHash }) => {
   if (proofState === 'idle') {
     return (
-      <div className="rounded-[0.875rem] p-5 flex items-center gap-4 my-6 bg-slate-500/10 border border-slate-500/25 text-[var(--text-primary)]">
-        <Lock className="w-6 h-6 text-[var(--text-muted)] shrink-0" />
-        <div className="text-left">
-          <div className="font-bold text-[0.95rem]">🔒 Privacy Protected</div>
-          <div className="text-sm text-[var(--text-secondary)]">
-            Your private input is not displayed.
-          </div>
-        </div>
-      </div>
+      <PrivacyBadge
+        variant="info"
+        label="🔒 Privacy Protected"
+        sublabel="Your private input is stored encrypted locally and never exposed."
+        className="my-6"
+      />
     );
   }
 
@@ -32,7 +28,7 @@ export const PrivacyStatus: React.FC<PrivacyStatusProps> = ({ proofState, txHash
             {proofState === 'generating' ? '🔐 Generating Private Proof' : '⚡ Submitting to Midnight Preprod'}
           </div>
           <div className="text-sm text-[var(--text-secondary)]">
-            Your private input is being used to construct the proof.
+            Your private input is being used to construct the proof locally.
           </div>
         </div>
       </div>
@@ -67,3 +63,4 @@ export const PrivacyStatus: React.FC<PrivacyStatusProps> = ({ proofState, txHash
 
   return null;
 };
+
