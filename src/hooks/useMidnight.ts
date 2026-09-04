@@ -19,7 +19,11 @@ declare global {
 }
 
 const PREPROD_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '2315129c322aba100c4c550157b64e94fd917547b73df1bc1bac867b88cd0400';
-const MIDNIGHT_NETWORK_ID = 'Undeployed';
+const MIDNIGHT_NETWORK_ID = (
+  process.env.NEXT_PUBLIC_MIDNIGHT_NETWORK ||
+  process.env.VITE_MIDNIGHT_NETWORK ||
+  'preprod'
+).toLowerCase();
 
 /**
  * Discover all Midnight-compatible wallet providers injected into window.midnight.
@@ -31,7 +35,11 @@ const discoverMidnightProviders = (): Array<{ key: string; provider: any }> => {
 
   return Object.entries(window.midnight)
     .filter(([_, provider]) => {
-      return provider && typeof provider === 'object' && typeof provider.name === 'string';
+      return (
+        provider &&
+        typeof provider === 'object' &&
+        (typeof provider.enable === 'function' || typeof provider.connect === 'function' || typeof provider.name === 'string')
+      );
     })
     .map(([key, provider]) => ({ key, provider }));
 };
@@ -48,7 +56,7 @@ export function useMidnight() {
   const [state, setState] = useState<MidnightState>({
     isConnected: false,
     address: null,
-    networkId: 'preprod',
+    networkId: MIDNIGHT_NETWORK_ID,
     error: null,
     proofState: 'idle',
     txHash: null,
@@ -103,42 +111,97 @@ export function useMidnight() {
 
     try {
       let api: any;
+      let activeNetworkId: string = MIDNIGHT_NETWORK_ID;
 
-      // The Midnight DApp Connector API uses .enable() to prompt the extension
+      // Candidate network IDs to attempt if Lace extension is set to a different network
+      const candidates = Array.from(
+        new Set([MIDNIGHT_NETWORK_ID, 'preprod', 'undeployed', 'preview', 'devnet', 'testnet'])
+      );
+
+      let lastError: any = null;
+
+      // 1. Try provider.enable() first if exposed
       if (typeof provider.enable === 'function') {
-        api = await provider.enable();
-      } else if (typeof provider.connect === 'function') {
-        api = await provider.connect(MIDNIGHT_NETWORK_ID);
-      } else {
-        setState((prev) => ({
-          ...prev,
-          error: 'Wallet provider found but does not expose enable() or connect(). Please update your Lace extension.',
-        }));
-        return;
+        try {
+          api = await provider.enable();
+        } catch (e: any) {
+          lastError = e;
+          if (
+            e?.message?.toLowerCase().includes('user') ||
+            e?.message?.toLowerCase().includes('cancel') ||
+            e?.message?.toLowerCase().includes('denied') ||
+            e?.message?.toLowerCase().includes('reject') ||
+            e?.code === 4001
+          ) {
+            throw e;
+          }
+        }
       }
 
-      // Extract the wallet address from the connected API
+      // 2. If enable() didn't return an API, iterate through network candidates with provider.connect()
+      if (!api && typeof provider.connect === 'function') {
+        for (const candidateNet of candidates) {
+          try {
+            console.log(`[AfriPass] Attempting connect with network ID: '${candidateNet}'`);
+            api = await provider.connect(candidateNet);
+            activeNetworkId = candidateNet;
+            lastError = null;
+            break;
+          } catch (e: any) {
+            lastError = e;
+            // Stop immediately if user explicitly declined/cancelled in the extension popup
+            if (
+              e?.message?.toLowerCase().includes('user') ||
+              e?.message?.toLowerCase().includes('cancel') ||
+              e?.message?.toLowerCase().includes('denied') ||
+              e?.message?.toLowerCase().includes('reject') ||
+              e?.code === 4001
+            ) {
+              throw e;
+            }
+          }
+        }
+      }
+
+      if (!api) {
+        throw lastError || new Error('Wallet provider found but connection could not be established.');
+      }
+
+      // Extract and format the wallet address from the connected API
+      const parseAddrStr = (val: any): string | null => {
+        if (!val) return null;
+        if (typeof val === 'string') return val;
+        if (typeof val === 'object') {
+          if (typeof val.address === 'string') return val.address;
+          if (typeof val.unshieldedAddress === 'string') return val.unshieldedAddress;
+          if (typeof val.bech32Address === 'string') return val.bech32Address;
+          if (typeof val.coinPublicKey === 'string') return val.coinPublicKey;
+          if (typeof val.toString === 'function' && val.toString() !== '[object Object]') return val.toString();
+        }
+        return String(val);
+      };
+
       let userAddress: string | null = null;
 
       if (typeof api.state === 'function') {
         const walletState = await api.state();
         userAddress =
-          walletState?.address ||
-          walletState?.coinPublicKey ||
-          walletState?.unshieldedAddress ||
-          null;
+          parseAddrStr(walletState?.address) ||
+          parseAddrStr(walletState?.coinPublicKey) ||
+          parseAddrStr(walletState?.unshieldedAddress) ||
+          parseAddrStr(walletState);
       }
 
       if (!userAddress && typeof api.getUnshieldedAddress === 'function') {
-        userAddress = await api.getUnshieldedAddress();
+        userAddress = parseAddrStr(await api.getUnshieldedAddress());
       }
 
       if (!userAddress && typeof api.getAddress === 'function') {
-        userAddress = await api.getAddress();
+        userAddress = parseAddrStr(await api.getAddress());
       }
 
       if (!userAddress && api.address) {
-        userAddress = api.address;
+        userAddress = parseAddrStr(api.address);
       }
 
       if (!userAddress) {
@@ -153,22 +216,29 @@ export function useMidnight() {
         ...prev,
         isConnected: true,
         address: userAddress,
-        networkId: 'preprod',
+        networkId: activeNetworkId,
         error: null,
       }));
     } catch (err: any) {
       console.error('[AfriPass] Midnight wallet connection error:', err);
 
+      const msg = err?.message?.toLowerCase() || '';
+
       if (
-        err?.message?.includes('user') ||
-        err?.message?.includes('cancel') ||
-        err?.message?.includes('denied') ||
-        err?.message?.includes('reject') ||
+        msg.includes('user') ||
+        msg.includes('cancel') ||
+        msg.includes('denied') ||
+        msg.includes('reject') ||
         err?.code === 4001
       ) {
         setState((prev) => ({
           ...prev,
-          error: 'Connection request was declined. Please approve the connection in your Lace extension.',
+          error: 'Connection request was declined. Please approve the connection in your Lace extension popup.',
+        }));
+      } else if (msg.includes('network') && msg.includes('mismatch')) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Network ID Mismatch: Your Lace extension is set to a different network. Please switch your network in Lace settings (e.g., Preprod or Undeployed) and try connecting again.',
         }));
       } else {
         setState((prev) => ({
@@ -184,7 +254,7 @@ export function useMidnight() {
     setState({
       isConnected: false,
       address: null,
-      networkId: 'preprod',
+      networkId: MIDNIGHT_NETWORK_ID,
       error: null,
       proofState: 'idle',
       txHash: null,

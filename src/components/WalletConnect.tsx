@@ -42,9 +42,13 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
     setDisplayError(null);
   };
 
-  // Truncate wallet address for clean UI presentation
-  const truncatedAddress = address
-    ? `${address.slice(0, 10)}...${address.slice(-6)}`
+  // Truncate wallet address safely for clean UI presentation
+  const addressStr = address ? (typeof address === 'string' ? address : String((address as any)?.address || (address as any)?.unshieldedAddress || address)) : null;
+
+  const truncatedAddress = addressStr
+    ? addressStr.length > 16
+      ? `${addressStr.slice(0, 10)}...${addressStr.slice(-6)}`
+      : addressStr
     : null;
 
   return (
@@ -72,9 +76,9 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
       ) : (
         <button
           onClick={onConnect}
-          className="inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl font-bold text-sm sm:text-base cursor-pointer border-0 text-white bg-gradient-to-br from-[var(--primary-emerald)] to-[var(--emerald-hover)] hover:brightness-105 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] dark:hover:shadow-[0_0_25px_rgba(16,185,129,0.25)] transition-all shadow-sm shrink-0"
+          className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-6 py-2 sm:py-2.5 rounded-xl font-bold text-xs sm:text-sm cursor-pointer border-0 text-white bg-gradient-to-br from-[var(--primary-emerald)] to-[var(--emerald-hover)] hover:brightness-105 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all shadow-sm shrink-0"
         >
-          <Wallet className="w-4 h-4 sm:w-5 sm:h-5" /> Connect Midnight Wallet
+          <Wallet className="w-4 h-4" /> Connect Wallet
         </button>
       )}
 
