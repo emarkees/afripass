@@ -67,3 +67,12 @@ Midnight network, Compact, Midnight.js SDK, React/Next.js, Lace wallet
 ## Demo Video
 
 https://www.loom.com/share/09a7aac782a44145831c27e9f6796a99
+
+## Verification & Compliance Checklist
+
+- [x] **Lace Wallet Integration**: Connect and disconnect supported across all candidate Midnight networks.
+- [x] **Client-side ZK Proof Generation**: Proof is constructed strictly locally in the browser before submitting to Preprod contract.
+- [x] **Zero-Knowledge Privacy**: Private input witness is masked and never exposed in UI or network payload.
+- [x] **Contract Address**: Deployed Preprod contract specified in documentation.
+- [x] **Live Demo & Video**: Live URL (`https://afripass.vercel.app`) and walkthrough video included.
+
