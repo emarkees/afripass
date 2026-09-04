@@ -2,13 +2,21 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
+/** Current operational state of the Midnight Lace DApp connection */
 export interface MidnightState {
+  /** Whether the Lace wallet is currently connected */
   isConnected: boolean;
+  /** Public wallet address string */
   address: string | null;
+  /** Active Midnight network identifier (e.g. 'preprod', 'undeployed') */
   networkId: string | null;
+  /** Human-readable error message or null */
   error: string | null;
+  /** Current zero-knowledge proof generation lifecycle stage */
   proofState: 'idle' | 'generating' | 'submitting' | 'success' | 'error';
+  /** Transaction hash of verified proof on Midnight ledger */
   txHash: string | null;
+  /** On-chain public counter value */
   lastCounter: number;
 }
 
