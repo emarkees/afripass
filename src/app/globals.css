@@ -103,3 +103,9 @@ body {
 code, pre, .font-mono {
   font-family: 'JetBrains Mono', monospace;
 }
+
+/* Accessible Focus Ring Utilities */
+*:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
