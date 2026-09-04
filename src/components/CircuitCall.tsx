@@ -42,6 +42,7 @@ export const CircuitCall: React.FC<CircuitCallProps> = ({
   const isInputValid = Boolean(stepInput && stepInput.trim() !== '' && !isNaN(Number(stepInput)) && Number(stepInput) > 0);
   const isButtonDisabled = !isInputValid || proofState === 'generating' || proofState === 'submitting';
 
+
   // Selected credential info
   const currentCredential = selectedCredentialForProof || MOCK_CREDENTIALS[0];
 
@@ -311,7 +312,8 @@ export const CircuitCall: React.FC<CircuitCallProps> = ({
               <button
                 type="submit"
                 disabled={isButtonDisabled}
-                title={!isInputValid ? "Please enter a valid private witness value to generate proof" : "Generate ZK Proof"}
+                title={!isInputValid ? "Please enter a valid private witness value to generate proof" : "Generate ZK Proof locally inside browser"}
+                aria-label="Generate Private Zero-Knowledge Proof"
                 className="w-full py-4 px-7 rounded-xl font-bold text-base cursor-pointer border-0 text-white bg-gradient-to-br from-[var(--primary-emerald)] to-[var(--emerald-hover)] hover:brightness-105 transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:brightness-100"
               >
                 {proofState === 'generating' || proofState === 'submitting' ? (
