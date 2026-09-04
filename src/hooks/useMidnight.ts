@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { MIDNIGHT_CONFIG } from '../config/midnightConfig';
 
 /** Current operational state of the Midnight Lace DApp connection */
 export interface MidnightState {
@@ -26,12 +27,9 @@ declare global {
   }
 }
 
-const PREPROD_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '2315129c322aba100c4c550157b64e94fd917547b73df1bc1bac867b88cd0400';
-const MIDNIGHT_NETWORK_ID = (
-  process.env.NEXT_PUBLIC_MIDNIGHT_NETWORK ||
-  process.env.VITE_MIDNIGHT_NETWORK ||
-  'preprod'
-).toLowerCase();
+const PREPROD_CONTRACT_ADDRESS = MIDNIGHT_CONFIG.PREPROD_CONTRACT_ADDRESS;
+const MIDNIGHT_NETWORK_ID = MIDNIGHT_CONFIG.DEFAULT_NETWORK_ID;
+
 
 /**
  * Discover all Midnight-compatible wallet providers injected into window.midnight.
