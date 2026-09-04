@@ -4,7 +4,7 @@
 
 ## Live Demo
 
-https://afripass.vercel.app
+https://afripass-three.vercel.app
 
 ## Contract Address
 
