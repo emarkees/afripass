@@ -160,8 +160,6 @@ async function main() {
     const deployed: any = await findDeployedContract(providers, {
       compiledContract: compiledContract as any,
       contractAddress: deployment.address,
-      privateStateId: PRIVATE_STATE_ID,
-      initialPrivateState: {},
     });
 
     console.log('  ✅ Connected!\n');
