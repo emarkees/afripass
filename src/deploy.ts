@@ -298,17 +298,16 @@ async function main() {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
       // Midnight.js 4.1.x supplies private state via privateStateId +
-      // initialPrivateState (empty here — the hello-world contract has no
+      // initialPrivateState (empty here — the counter contract has no
       // witnesses). args is the contract constructor's arguments: empty for
-      // hello-world's no-arg constructor. (Statically-typed contracts can omit
+      // counter's no-arg constructor. (Statically-typed contracts can omit
       // args entirely; this script loads the contract dynamically, so the
       // conditional args type widens to any[] and an explicit [] is required.)
       deployed = await deployContract(providers, {
         compiledContract: compiledContract as any,
-        args: [{}],
+        args: [],
         privateStateId: PRIVATE_STATE_ID,
         initialPrivateState: {},
-        signingKey: walletCtx.shieldedSecretKeys.coinPublicKey as any,
       });
       break;
     } catch (err: any) {

@@ -47,101 +47,66 @@ function makeCircuitContext(
 }
 
 // ───────────────────────────────────────────────────────────
-// Test suite — Counter Contract
+// Test suite — Counter Contract (AfriPass)
 // ───────────────────────────────────────────────────────────
-describe('Counter Contract', () => {
+describe('AfriPass Financial Eligibility Contract', () => {
   // ── Test 1: Circuit logic — initial state is zero ──────
-  it('should initialize the counter ledger state to zero', async () => {
+  it('should initialize the total_verified ledger state to zero', async () => {
     const { state } = await deployLocal();
     const ledgerState = ledger(state.data);
-    expect(ledgerState.counter).toBe(0n);
+    expect(ledgerState.total_verified).toBe(0n);
   });
 
-  // ── Test 2: State transitions — increment updates ledger ─
-  it('should increment the counter after calling increment_counter', async () => {
+  // ── Test 2: State transitions — successful eligibility verification ─
+  it('should increment total_verified after calling verify_eligibility with sufficient income', async () => {
     let { contract, state, privateState, zswapLocalState } =
       await deployLocal();
 
-    // First increment (step = 5n — but contract always adds 1 to counter)
     const ctx1 = makeCircuitContext(state, privateState, zswapLocalState);
-    const result1 = await contract.circuits.increment_counter(ctx1, 5n);
+    const pubkey = new Uint8Array(32); // mock public key
+
+    // First verification (income = 400000n, which is >= 350000n)
+    const result1 = await contract.circuits.verify_eligibility(ctx1, pubkey, 400000n);
 
     // Update state from the circuit result
     const queryCtx1 = result1.context.currentQueryContext ?? (result1.context as any).callContext?.currentQueryContext;
     state.data = queryCtx1.state;
-    expect(ledger(state.data).counter).toBe(1n);
-
-    // Second increment — counter should be 2
-    const ctx2 = makeCircuitContext(
-      state,
-      result1.context.currentPrivateState ?? (result1.context as any).callContext?.currentPrivateState,
-      result1.context.currentZswapLocalState ?? (result1.context as any).callContext?.currentZswapLocalState,
-    );
-    const result2 = await contract.circuits.increment_counter(ctx2, 10n);
-
-    const queryCtx2 = result2.context.currentQueryContext ?? (result2.context as any).callContext?.currentQueryContext;
-    state.data = queryCtx2.state;
-    expect(ledger(state.data).counter).toBe(2n);
+    expect(ledger(state.data).total_verified).toBe(1n);
   });
 
-  // ── Test 3: Privacy — private inputs never exposed in results ─
-  it('should not expose the private step value in the circuit results', async () => {
+  // ── Test 3: Rejection — insufficient income ─
+  it('should reject verification if income is below minimum', async () => {
     let { contract, state, privateState, zswapLocalState } =
       await deployLocal();
 
-    const stepValue = 42n;
     const ctx = makeCircuitContext(state, privateState, zswapLocalState);
-    const result = await contract.circuits.increment_counter(ctx, stepValue);
+    const pubkey = new Uint8Array(32);
 
-    // Circuit returns an empty tuple — private witness is not in outputs
-    expect(result.result).toEqual([]);
-
-    // The counter changed (state transition happened), proving the
-    // circuit ran, but the step value itself is not in the result.
-    const queryCtx = result.context.currentQueryContext ?? (result.context as any).callContext?.currentQueryContext;
-    state.data = queryCtx.state;
-    expect(ledger(state.data).counter).toBe(1n);
-
-    // Private state is preserved and not leaked into public data
-    expect(result.context.currentPrivateState ?? (result.context as any).callContext?.currentPrivateState).toBeDefined();
+    // Income is below 350000
+    await expect(contract.circuits.verify_eligibility(ctx, pubkey, 300000n)).rejects.toThrow();
   });
 
-  // ── Test 4: Boundary — step must be within Uint<32> range ──
-  it('should reject a step value exceeding Uint<32> range', async () => {
-    const { contract, state, privateState, zswapLocalState } =
-      await deployLocal();
-
-    const ctx = makeCircuitContext(state, privateState, zswapLocalState);
-
-    // Uint<32> max is 2^32 - 1 = 4294967295; passing 2^32 should throw type error
-    expect(() => {
-      contract.circuits.increment_counter(ctx, 2n ** 32n);
-    }).toThrow();
-  });
-
-  // ── Test 5: Accumulation — multiple increments accumulate ─
-  it('should accumulate counter value over multiple increments', async () => {
+  // ── Test 4: Rejection — already verified ─
+  it('should reject if the same user tries to verify twice', async () => {
     let { contract, state, privateState, zswapLocalState } =
       await deployLocal();
 
-    let currentPrivateState = privateState;
-    let currentZswap = zswapLocalState;
+    const pubkey = new Uint8Array(32);
+    pubkey[0] = 1;
 
-    const NUM_INCREMENTS = 5;
+    let ctx = makeCircuitContext(state, privateState, zswapLocalState);
+    const result1 = await contract.circuits.verify_eligibility(ctx, pubkey, 350000n);
+    
+    // Update state for next call
+    const queryCtx1 = result1.context.currentQueryContext ?? (result1.context as any).callContext?.currentQueryContext;
+    state.data = queryCtx1.state;
+    privateState = result1.context.currentPrivateState ?? (result1.context as any).callContext?.currentPrivateState;
+    zswapLocalState = result1.context.currentZswapLocalState ?? (result1.context as any).callContext?.currentZswapLocalState;
 
-    for (let i = 0; i < NUM_INCREMENTS; i++) {
-      const ctx = makeCircuitContext(state, currentPrivateState, currentZswap);
-      const result = await contract.circuits.increment_counter(
-        ctx,
-        BigInt(i + 1),
-      );
-      const queryCtx = result.context.currentQueryContext ?? (result.context as any).callContext?.currentQueryContext;
-      state.data = queryCtx.state;
-      currentPrivateState = result.context.currentPrivateState ?? (result.context as any).callContext?.currentPrivateState;
-      currentZswap = result.context.currentZswapLocalState ?? (result.context as any).callContext?.currentZswapLocalState;
-    }
+    ctx = makeCircuitContext(state, privateState, zswapLocalState);
 
-    const finalLedger = ledger(state.data);
-    expect(finalLedger.counter).toBe(BigInt(NUM_INCREMENTS));
+    // Second verification with same pubkey should fail
+    await expect(contract.circuits.verify_eligibility(ctx, pubkey, 400000n)).rejects.toThrow();
   });
 });
+
