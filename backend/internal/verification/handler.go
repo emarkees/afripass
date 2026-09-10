@@ -50,7 +50,7 @@ func HandleVerifyProof(w http.ResponseWriter, r *http.Request) {
 		MidnightNetwork:         "Midnight Preprod Network",
 		ProofID:                 req.ProofID,
 		Claim:                   "Monthly Income ≥ ₦1,000,000",
-		IssuerName:              "Demo Bank Nigeria",
+		IssuerName:              "First Horizon Financial Institution",
 		UnderlyingDataDisclosed: false,
 		Timestamp:               time.Now().Format("2006-01-02 15:04:05"),
 	})

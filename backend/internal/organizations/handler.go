@@ -41,7 +41,7 @@ func HandleGetOrganization(w http.ResponseWriter, r *http.Request) {
 	}
 
 	store := database.GetStore()
-	org := store.Organizations["prov-demo-bank"]
+	org := store.Organizations["org-first-horizon"]
 	if org == nil {
 		response.Error(w, http.StatusNotFound, "NOT_FOUND", "Organization not found")
 		return
@@ -58,7 +58,7 @@ func HandleGetDashboardStats(w http.ResponseWriter, r *http.Request) {
 	}
 
 	store := database.GetStore()
-	org := store.Organizations["prov-demo-bank"]
+	org := store.Organizations["org-first-horizon"]
 	if org == nil {
 		response.Error(w, http.StatusNotFound, "NOT_FOUND", "Organization not found")
 		return
@@ -99,7 +99,7 @@ func HandleUpdateOrganization(w http.ResponseWriter, r *http.Request) {
 	}
 
 	store := database.GetStore()
-	org := store.Organizations["prov-demo-bank"]
+	org := store.Organizations["org-first-horizon"]
 	if org == nil {
 		response.Error(w, http.StatusNotFound, "NOT_FOUND", "Organization not found")
 		return
@@ -126,7 +126,7 @@ func HandleGetOrganizationStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	store := database.GetStore()
-	org := store.Organizations["prov-demo-bank"]
+	org := store.Organizations["org-first-horizon"]
 	if org == nil {
 		response.Error(w, http.StatusNotFound, "NOT_FOUND", "Organization not found")
 		return

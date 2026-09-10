@@ -66,7 +66,7 @@ func HandleListPlans(w http.ResponseWriter, r *http.Request) {
 			Currency:     "USD",
 			Features: []string{
 				"Test/sandbox API access",
-				"Synthetic credential issuance",
+				"Sandbox credential issuance",
 				"Test proof verification",
 				"1 team member",
 				"100 API requests/day",
