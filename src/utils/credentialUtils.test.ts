@@ -1,3 +1,4 @@
+import { describe, test, expect } from 'vitest';
 import { isCredentialValid, getCredentialStatusBadgeClass, formatAfricanCurrency } from './credentialUtils';
 import { FinancialCredential } from '../types/credential';
 
