@@ -34,7 +34,7 @@ export const ProviderSidebarNav: React.FC<ProviderSidebarNavProps> = ({
   const isApproved = provider.status === 'approved';
 
   return (
-    <aside className="w-full lg:w-64 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[1.25rem] p-4 text-left shadow-md shrink-0 flex flex-col justify-between">
+    <aside className="w-full lg:w-64 h-full shrink-0 bg-[var(--bg-card)] border-r border-[var(--border-color)] p-5 text-left flex flex-col justify-between overflow-y-auto z-10">
       <div>
         {/* Provider Profile Header Card */}
         <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] mb-4">
