@@ -19,7 +19,8 @@
     "proof-server:stop": "docker compose down",
     "clean": "rm -rf managed .midnight-state.json .midnight-wallet-state",
     "test": "npx --yes vitest run tests/counter.test.ts",
-    "test:e2e": "tsx scripts/e2e-check.ts"
+    "test:e2e": "tsx scripts/e2e-check.ts",
+    "postinstall": "node -e \"const fs=require('fs'),p=require('path');const t=p.join('node_modules','@midnight-ntwrk','midnight-js-protocol','node_modules','@midnight-ntwrk','onchain-runtime-v3');const s=p.join('node_modules','@midnight-ntwrk','onchain-runtime-v3');if(fs.existsSync(t)&&!fs.lstatSync(t).isSymbolicLink()){fs.rmSync(t,{recursive:true,force:true});fs.symlinkSync(p.resolve(s),t);console.log('Deduped onchain-runtime-v3')}\""
   },
   "dependencies": {
     "@midnight-ntwrk/compact-runtime": "0.16.0",
