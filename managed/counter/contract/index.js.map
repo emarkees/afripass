@@ -4,5 +4,5 @@
   "sourceRoot": "../../../",
   "sources": ["contracts/counter.compact"],
   "names": [],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EAQA;;;;;;;;;;MAOA,AAAA,kBASC;;;;;cATiC,qBAA8B;cAAE,QAAgB;;;;;;;;;;;;;;;;;;;;;;;;;yCAAhD,qBAA8B,+BAAE,QAAgB;;;;;;;;;0DAAhD,qBAA8B;0DAAE,QAAgB;;;;OASjF;;;;;;;;GAdA;EAFD;;;;;;;;;;;;;;;;;;;;;;;;;;IAFA;;;;;;;;;yEAAuC;UAGnC,KAAc;IAAd;;;;;;;2HAAA,KAAc;;yEAAA;;;;;;;GACjB;EAKD,AAAA,2BASC;;8BATiC,qBAA8B;8BAAE,QAAgB;;4BAGvE,QAAM;;UAKb,KAAc;;;;;6CAAI;;;;;;;;;;;kHAAc;;;IAAhC;;;;;;;2HAAA,KAAc;;yEAAA;;GACjB;;;;;;;;;;;;;;;;IAlBD;qCAAA;;;;;;;;;;;0GAAuC;KAAA;;;;;;;;;;;;;;"
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EAQA;;;;;;;;;;MAOA,AAAA,kBASC;;;;;cATiC,qBAA8B;cAAE,QAAgB;;;;;;;;;;;;;;;;;;;;;;;;;yCAAhD,qBAA8B,+BAAE,QAAgB;;;;;;;;;oDAAhD,qBAA8B;oDAAE,QAAgB;;;OASjF;;;;;;;;GAdA;EAFD;;;;;;;;;;;;;;;;;;;;;;;;;;IAFA;;;;;;;;;yEAAuC;UAGnC,KAAc;IAAd;;;;;;;2HAAA,KAAc;;yEAAA;;;;;;;GACjB;EAKD,AAAA,qBASC;;wBATiC,qBAA8B;wBAAE,QAAgB;;4BAGvE,QAAM;;UAKb,KAAc;;;;;6CAAI;;;;;;;;;;;kHAAc;;;IAAhC;;;;;;;2HAAA,KAAc;;yEAAA;;GACjB;;;;;;;;;;;;;;;;IAlBD;qCAAA;;;;;;;;;;;0GAAuC;KAAA;;;;;;;;;;"
 }
