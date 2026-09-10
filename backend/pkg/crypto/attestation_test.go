@@ -6,7 +6,7 @@ import (
 
 func TestSignAndVerifyAttestation(t *testing.T) {
 	credID := "AFP-CRED-100"
-	issuerID := "prov-demo-bank"
+	issuerID := "org-first-horizon"
 	claim := "Monthly Income Credential"
 	keyID := "key_001"
 	secretKey := []byte("test_secret_key_12345")
