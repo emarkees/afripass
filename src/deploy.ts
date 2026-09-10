@@ -303,12 +303,12 @@ async function main() {
       // counter's no-arg constructor. (Statically-typed contracts can omit
       // args entirely; this script loads the contract dynamically, so the
       // conditional args type widens to any[] and an explicit [] is required.)
-      deployed = await deployContract(providers, {
+      deployed = await deployContract(providers as any, {
         compiledContract: compiledContract as any,
         args: [],
         privateStateId: PRIVATE_STATE_ID,
         initialPrivateState: {},
-      });
+      } as any);
       break;
     } catch (err: any) {
       const errMsg = err?.message || err?.toString() || '';
