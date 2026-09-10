@@ -213,10 +213,10 @@ func HandleProviderLogin(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Fallback to Demo Bank if requested email matches seeded demo email or default fallback
-	if targetUser == nil && (strings.EqualFold(req.Email, "compliance@demobank.ng") || req.Email != "") {
+	// Default to seeded institutional user if requested email matches seeded admin or default fallback
+	if targetUser == nil && (strings.EqualFold(req.Email, "compliance@firsthorizon.com") || req.Email != "") {
 		for _, u := range store.Users {
-			if u.Email == "compliance@demobank.ng" {
+			if u.Email == "compliance@firsthorizon.com" {
 				targetUser = u
 				break
 			}
