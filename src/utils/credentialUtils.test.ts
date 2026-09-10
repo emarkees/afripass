@@ -18,7 +18,6 @@ describe('credentialUtils', () => {
     issuedAt: '2026-01-01',
     expiresAt: '2027-01-01',
     status: 'active',
-    isDemo: true,
   };
 
   test('isCredentialValid returns true for active future-dated credentials', () => {

@@ -113,13 +113,11 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col w-full bg-[var(--bg-primary)] text-[var(--text-primary)]">
+    <div className="h-screen h-dvh flex flex-col w-full overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)]">
       {/* Top Status & Environment Bar */}
-      <EnvironmentIndicator />
-
-      {/* Header Navigation Bar */}
-      <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-[var(--bg-primary)]/90 border-b border-[var(--border-color)]">
-        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-[4.5rem]">
+      <header className="shrink-0 w-full z-50 bg-[var(--bg-primary)]/90 backdrop-blur-md border-b border-[var(--border-color)]">
+        <EnvironmentIndicator />
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           <a
             href="#"
             onClick={(e) => {
@@ -253,78 +251,73 @@ export function App() {
         )}
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 w-full py-6">
-        {activeMainView === 'requests' && (
-          <div className="px-4 sm:px-6">
-            <UserRequestCenter onGenerateProofForRequest={handleGenerateProofForRequest} />
-          </div>
-        )}
+      {/* App Body Shell */}
+      <div className="flex-1 min-h-0 flex w-full overflow-hidden">
+        {activeMainView === 'provider' && currentProvider ? (
+          <>
+            {/* Fixed Full-Height Desktop Sidebar */}
+            <ProviderSidebarNav
+              currentTab={providerSubTab}
+              provider={currentProvider}
+              onSelectTab={setProviderSubTab}
+              onLogout={() => {
+                authService.logout();
+                setCurrentProvider(null);
+              }}
+              onSwitchToUserMode={() => setActiveMainView('user')}
+            />
 
-        {activeMainView === 'directory' && (
-          <div className="px-4 sm:px-6">
-            <ProviderDirectoryView />
-          </div>
-        )}
-
-        {activeMainView === 'provider' && (
-          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
-            {!currentProvider ? (
-              <div>
-                {providerAuthMode === 'register' ? (
-                  <ProviderRegisterView
-                    onSuccess={(p) => {
-                      setCurrentProvider(p);
-                      setProviderSubTab('dashboard');
-                    }}
-                    onNavigateToLogin={() => setProviderAuthMode('login')}
-                  />
-                ) : (
-                  <ProviderLoginView
-                    onSuccess={(p) => {
-                      setCurrentProvider(p);
-                      setProviderSubTab('dashboard');
-                    }}
-                    onNavigateToRegister={() => setProviderAuthMode('register')}
-                  />
+            {/* ONLY PRIMARY VERTICAL SCROLL CONTAINER ON DESKTOP */}
+            <main className="flex-1 min-w-0 h-full overflow-y-auto overflow-x-hidden p-6 sm:p-8">
+              <div className="max-w-7xl mx-auto w-full space-y-6">
+                {providerSubTab === 'dashboard' && (
+                  <ProviderDashboardView provider={currentProvider} onNavigateTab={setProviderSubTab} />
                 )}
+                {providerSubTab === 'issue' && (
+                  <IssueCredentialView provider={currentProvider} onSuccess={() => setProviderSubTab('dashboard')} />
+                )}
+                {providerSubTab === 'verify' && <ProviderVerifyView />}
+                {providerSubTab === 'requests' && (
+                  <UserRequestCenter onGenerateProofForRequest={handleGenerateProofForRequest} />
+                )}
+                {providerSubTab === 'team' && <ProviderTeamView currentProvider={currentProvider} />}
+                {providerSubTab === 'api' && <ProviderApiView />}
+                {providerSubTab === 'webhooks' && <ProviderWebhookView currentProvider={currentProvider} />}
+                {providerSubTab === 'billing' && <ProviderBillingView currentProvider={currentProvider} />}
+                {providerSubTab === 'audit' && <ProviderAuditView />}
+                {providerSubTab === 'organization' && <ProviderOrgView provider={currentProvider} />}
               </div>
-            ) : (
-              <div className="flex flex-col lg:flex-row gap-6 items-start">
-                <ProviderSidebarNav
-                  currentTab={providerSubTab}
-                  provider={currentProvider}
-                  onSelectTab={setProviderSubTab}
-                  onLogout={() => {
-                    authService.logout();
-                    setCurrentProvider(null);
-                  }}
-                  onSwitchToUserMode={() => setActiveMainView('user')}
-                />
-                <div className="flex-1 w-full min-w-0">
-                  {providerSubTab === 'dashboard' && (
-                    <ProviderDashboardView provider={currentProvider} onNavigateTab={setProviderSubTab} />
+            </main>
+          </>
+        ) : (
+          <main className="flex-1 min-w-0 h-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 flex flex-col justify-between">
+            <div className="max-w-7xl mx-auto w-full space-y-8">
+              {activeMainView === 'requests' && (
+                <UserRequestCenter onGenerateProofForRequest={handleGenerateProofForRequest} />
+              )}
+              {activeMainView === 'directory' && <ProviderDirectoryView />}
+              {activeMainView === 'provider' && !currentProvider && (
+                <div>
+                  {providerAuthMode === 'register' ? (
+                    <ProviderRegisterView
+                      onSuccess={(p) => {
+                        setCurrentProvider(p);
+                        setProviderSubTab('dashboard');
+                      }}
+                      onNavigateToLogin={() => setProviderAuthMode('login')}
+                    />
+                  ) : (
+                    <ProviderLoginView
+                      onSuccess={(p) => {
+                        setCurrentProvider(p);
+                        setProviderSubTab('dashboard');
+                      }}
+                      onNavigateToRegister={() => setProviderAuthMode('register')}
+                    />
                   )}
-                  {providerSubTab === 'issue' && (
-                    <IssueCredentialView provider={currentProvider} onSuccess={() => setProviderSubTab('dashboard')} />
-                  )}
-                  {providerSubTab === 'verify' && <ProviderVerifyView />}
-                  {providerSubTab === 'requests' && (
-                    <UserRequestCenter onGenerateProofForRequest={handleGenerateProofForRequest} />
-                  )}
-                  {providerSubTab === 'team' && <ProviderTeamView currentProvider={currentProvider} />}
-                  {providerSubTab === 'api' && <ProviderApiView />}
-                  {providerSubTab === 'webhooks' && <ProviderWebhookView currentProvider={currentProvider} />}
-                  {providerSubTab === 'billing' && <ProviderBillingView currentProvider={currentProvider} />}
-                  {providerSubTab === 'audit' && <ProviderAuditView />}
-                  {providerSubTab === 'organization' && <ProviderOrgView provider={currentProvider} />}
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeMainView === 'user' && (
+              )}
+              {activeMainView === 'user' && (
           <>
             {/* Upgraded Hero Section */}
             <section className="pt-10 sm:pt-16 pb-12 text-center w-full">
@@ -510,35 +503,38 @@ export function App() {
             </section>
           </>
         )}
-      </main>
+            </div>
 
-      {/* Footer */}
-      <footer className="w-full border-t border-[var(--border-color)] py-12 mt-16 text-center text-[var(--text-muted)] text-[0.9rem]">
-        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-wrap justify-between items-center gap-6 mb-8">
-            <div className="flex items-center gap-3 no-underline">
-              <div className="w-7 h-7 bg-gradient-to-br from-[var(--primary-emerald)] to-[var(--accent-cyan)] rounded-lg flex items-center justify-center text-white shadow-sm">
-                <Shield className="w-4 h-4" />
+            {/* Footer */}
+            <footer className="w-full border-t border-[var(--border-color)] py-12 mt-16 text-center text-[var(--text-muted)] text-[0.9rem]">
+              <div className="w-full max-w-6xl mx-auto px-4 sm:px-6">
+                <div className="flex flex-wrap justify-between items-center gap-6 mb-8">
+                  <div className="flex items-center gap-3 no-underline">
+                    <div className="w-7 h-7 bg-gradient-to-br from-[var(--primary-emerald)] to-[var(--accent-cyan)] rounded-lg flex items-center justify-center text-white shadow-sm">
+                      <Shield className="w-4 h-4" />
+                    </div>
+                    <span className="text-[1.1rem] font-extrabold text-[var(--text-primary)]">AfriPass</span>
+                  </div>
+
+                  <div className="flex items-center gap-6 text-xs text-[var(--text-muted)]">
+                    <span>Network: <strong>Midnight Preprod</strong></span>
+                    <span>Contract: <code className="font-mono text-[var(--primary-emerald)]">{contractAddress.slice(0, 10)}...</code></span>
+                  </div>
+                </div>
+
+                <div className="text-[0.825rem] text-[var(--text-muted)] leading-relaxed border-t border-[var(--border-color)] pt-6">
+                  <p>
+                    <strong>Privacy & Attestation Claim:</strong> AfriPass lets trusted institutions attest to financial credentials, then uses Midnight zero-knowledge technology to let users prove eligibility without exposing underlying bank records.
+                  </p>
+                  <p className="mt-2">
+                    Midnight Builder Challenge Level 2 Project &bull; Built with Next.js, TypeScript, and Midnight.js SDK.
+                  </p>
+                </div>
               </div>
-              <span className="text-[1.1rem] font-extrabold text-[var(--text-primary)]">AfriPass</span>
-            </div>
-
-            <div className="flex items-center gap-6 text-xs text-[var(--text-muted)]">
-              <span>Network: <strong>Midnight Preprod</strong></span>
-              <span>Contract: <code className="font-mono text-[var(--primary-emerald)]">{contractAddress.slice(0, 10)}...</code></span>
-            </div>
-          </div>
-
-          <div className="text-[0.825rem] text-[var(--text-muted)] leading-relaxed border-t border-[var(--border-color)] pt-6">
-            <p>
-              <strong>Privacy & Attestation Claim:</strong> AfriPass lets trusted institutions attest to financial credentials, then uses Midnight zero-knowledge technology to let users prove eligibility without exposing underlying bank records.
-            </p>
-            <p className="mt-2">
-              Midnight Builder Challenge Level 2 Project &bull; Built with Next.js, TypeScript, and Midnight.js SDK.
-            </p>
-          </div>
-        </div>
-      </footer>
+            </footer>
+          </main>
+        )}
+      </div>
     </div>
   );
 }
