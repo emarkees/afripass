@@ -15,8 +15,9 @@ type Organization struct {
 	ContactPerson          string    `json:"contactPerson"`
 	Role                   string    `json:"role"`
 	Status                 string    `json:"status"` // 'pending', 'approved', 'suspended', 'rejected'
-	CredentialsIssuedCount int       `json:"credentialsIssuedCount"`
+	CredentialsIssuedCount  int       `json:"credentialsIssuedCount"`
 	ActiveCredentialsCount int       `json:"activeCredentialsCount"`
+	RevokedCredentialsCount int      `json:"revokedCredentialsCount"`
 	ProofsVerifiedCount    int       `json:"proofsVerifiedCount"`
 	CreatedAt              time.Time `json:"createdAt"`
 }
@@ -179,14 +180,14 @@ func seedMockData(s *MemoryStore) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	// Seed Demo Bank Organization
-	s.Organizations["prov-demo-bank"] = &Organization{
-		ID:                     "prov-demo-bank",
-		Name:                   "Demo Bank Nigeria",
+	// Seed First Horizon Financial Organization
+	s.Organizations["org-first-horizon"] = &Organization{
+		ID:                     "org-first-horizon",
+		Name:                   "First Horizon Financial Institution",
 		Type:                   "Bank",
 		Country:                "Nigeria",
-		BusinessEmail:          "compliance@demobank.ng",
-		Website:                "https://demobank.ng",
+		BusinessEmail:          "compliance@firsthorizon.com",
+		Website:                "https://firsthorizon.com",
 		ContactPerson:          "Amina Bello",
 		Role:                   "both",
 		Status:                 "approved",
@@ -196,16 +197,16 @@ func seedMockData(s *MemoryStore) {
 		CreatedAt:              time.Now().Add(-180 * 24 * time.Hour),
 	}
 
-	// Seed Demo Administrator User
+	// Seed Institutional Administrator User
 	now := time.Now()
-	s.Users["user_demo_admin"] = &User{
-		ID:            "user_demo_admin",
+	s.Users["user_admin_001"] = &User{
+		ID:            "user_admin_001",
 		FirstName:     "Amina",
 		LastName:      "Bello",
-		Email:         "compliance@demobank.ng",
+		Email:         "compliance@firsthorizon.com",
 		PasswordHash:  "hashed_password_sample",
 		PhoneNumber:   "+2348012345678",
-		OrgID:         "prov-demo-bank",
+		OrgID:         "org-first-horizon",
 		Role:          "OWNER",
 		AccountStatus: "active",
 		EmailVerified: true,
@@ -213,11 +214,11 @@ func seedMockData(s *MemoryStore) {
 		CreatedAt:     time.Now().Add(-180 * 24 * time.Hour),
 	}
 
-	// Seed Sample Session
+	// Seed Active Session
 	s.Sessions["sess_sample_001"] = &Session{
 		ID:         "sess_sample_001",
-		UserID:     "user_demo_admin",
-		OrgID:      "prov-demo-bank",
+		UserID:     "user_admin_001",
+		OrgID:      "org-first-horizon",
 		Token:      "afripass_jwt_token_sample",
 		Device:     "MacBook Pro 16",
 		Browser:    "Chrome 122.0",
@@ -228,7 +229,7 @@ func seedMockData(s *MemoryStore) {
 		ExpiresAt:  time.Now().Add(24 * time.Hour),
 	}
 
-	// Seed Sample Credential
+	// Seed Attested Financial Credential
 	s.Credentials["AFP-CRED-001"] = &Credential{
 		ID:               "AFP-CRED-001",
 		Type:             "income",
@@ -238,8 +239,8 @@ func seedMockData(s *MemoryStore) {
 		DisplayThreshold: "₦2.0M+",
 		Currency:         "NGN",
 		Period:           "6 months",
-		IssuerID:         "prov-demo-bank",
-		IssuerName:       "Demo Bank Nigeria",
+		IssuerID:         "org-first-horizon",
+		IssuerName:       "First Horizon Financial Institution",
 		IssuerStatus:     "verified",
 		IssuedAt:         time.Now().Add(-30 * 24 * time.Hour),
 		ExpiresAt:        time.Now().Add(300 * 24 * time.Hour),
