@@ -239,7 +239,7 @@ export const authService = {
       {
         id: 'sess-curr-001',
         userId: current?.currentUser?.id || 'usr-owner-1',
-        organizationId: current?.id || 'prov-demo-bank',
+        organizationId: current?.id || 'org-first-horizon',
         device: 'MacBook Pro 16 (Apple M3)',
         browser: 'Chrome 122.0.6261 (macOS)',
         ip: '197.210.64.12',
@@ -252,7 +252,7 @@ export const authService = {
       {
         id: 'sess-sec-002',
         userId: current?.currentUser?.id || 'usr-owner-1',
-        organizationId: current?.id || 'prov-demo-bank',
+        organizationId: current?.id || 'org-first-horizon',
         device: 'iPhone 15 Pro (iOS 17)',
         browser: 'Mobile Safari 17.2',
         ip: '102.89.23.44',

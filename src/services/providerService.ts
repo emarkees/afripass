@@ -36,7 +36,7 @@ export const providerService = {
       return stats;
     } catch {
       return {
-        organizationName: 'Demo Bank Nigeria',
+        organizationName: 'First Horizon Financial Institution',
         organizationType: 'Bank',
         organizationRole: 'Issuer + Verifier',
         organizationStatus: 'approved',

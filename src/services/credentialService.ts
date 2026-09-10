@@ -74,4 +74,41 @@ export const credentialService = {
       throw new Error('Credential not found');
     }
   },
+
+  async verifyAttestation(params: {
+    credentialId: string;
+    issuerId: string;
+    claim: string;
+    keyId?: string;
+    signature?: string;
+  }): Promise<{
+    valid: boolean;
+    credentialId: string;
+    issuerId: string;
+    issuerName: string;
+    status: string;
+    signature: string;
+    verifiedAt: string;
+    trustLevel: string;
+  }> {
+    try {
+      return await apiFetch('/api/v1/credentials/verify-attestation', {
+        method: 'POST',
+        body: JSON.stringify(params),
+      });
+    } catch (err) {
+      console.warn('Attestation verification API call fallback:', err);
+      return {
+        valid: false,
+        credentialId: params.credentialId,
+        issuerId: params.issuerId,
+        issuerName: 'Unverified Financial Institution',
+        status: 'unverified',
+        signature: params.signature || '',
+        verifiedAt: new Date().toISOString(),
+        trustLevel: 'Provider Attestation (Unverified)',
+      };
+    }
+  },
 };
+
