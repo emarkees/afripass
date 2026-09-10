@@ -19,7 +19,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@midnight-ntwrk/compact-runtime": ["./node_modules/@midnight-ntwrk/compact-runtime/dist/index.d.ts"],
+      "@midnight-ntwrk/midnight-js-protocol/compact-js": ["./node_modules/@midnight-ntwrk/midnight-js-protocol/dist/compact-js.d.ts"],
+      "@midnight-ntwrk/midnight-js-protocol/ledger": ["./node_modules/@midnight-ntwrk/midnight-js-protocol/dist/ledger.d.ts"],
+      "@midnight-ntwrk/midnight-js-protocol/*": ["./node_modules/@midnight-ntwrk/midnight-js-protocol/dist/*.d.ts"],
+      "@midnight-ntwrk/*": ["./node_modules/@midnight-ntwrk/*/dist/index.d.ts", "./node_modules/@midnight-ntwrk/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

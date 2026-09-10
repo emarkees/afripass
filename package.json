@@ -19,7 +19,8 @@
     "proof-server:stop": "docker compose down",
     "clean": "rm -rf managed .midnight-state.json .midnight-wallet-state",
     "test": "npx --yes vitest run tests/counter.test.ts",
-    "test:e2e": "tsx scripts/e2e-check.ts"
+    "test:e2e": "tsx scripts/e2e-check.ts",
+    "postinstall": "node scripts/patch-packages.js"
   },
   "dependencies": {
     "@midnight-ntwrk/compact-runtime": "0.16.0",

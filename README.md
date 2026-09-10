@@ -4,8 +4,7 @@
 
 ## Live Demo & Deployment
 
-- **Live Web Application**: [https://afripass-three.vercel.app](https://afripass-three.vercel.app)
-- **Go REST Backend Server**: `http://localhost:8080` (Dockerized Go 1.22+)
+https://afripass-three.vercel.app
 
 ## Contract Address
 
