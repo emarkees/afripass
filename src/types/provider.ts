@@ -94,7 +94,7 @@ export interface Provider {
   activeCredentialsCount: number;
   proofsVerifiedCount: number;
   createdAt: string;
-  isDemo: boolean;
+  isDemo?: boolean;
 }
 
 export interface ProviderMember {

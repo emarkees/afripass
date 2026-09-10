@@ -13,7 +13,6 @@ export interface Issuer {
   name: string;
   type: string; // e.g. 'Commercial Bank', 'Fintech', 'Microfinance Cooperative', 'Employer'
   status: IssuerStatus;
-  isDemo: boolean; // Always true for demo issuers
   credentialsOffered: string[];
   description: string;
   logoIcon?: string;
@@ -35,8 +34,10 @@ export interface FinancialCredential {
   issuedAt: string;
   expiresAt: string;
   status: CredentialStatus;
-  isDemo: boolean;
+  isDemo?: boolean;
   revocationReason?: string;
+  signature?: string;
+  keyId?: string;
 }
 
 /** On-chain attestation issued by a verified financial institution */
