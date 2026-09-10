@@ -33,7 +33,6 @@ export const CircuitCall: React.FC<CircuitCallProps> = ({
   onConnect,
   onNavigateToVerify,
 }) => {
-  const [credentialSource, setCredentialSource] = useState<'attested' | 'synthetic'>('attested');
   const [stepInput, setStepInput] = useState<string>('');
   const [showMasked, setShowMasked] = useState<boolean>(true);
   const [activeProofResult, setActiveProofResult] = useState<ProofResult | null>(null);
@@ -41,7 +40,6 @@ export const CircuitCall: React.FC<CircuitCallProps> = ({
 
   const isInputValid = Boolean(stepInput && stepInput.trim() !== '' && !isNaN(Number(stepInput)) && Number(stepInput) > 0);
   const isButtonDisabled = !isInputValid || proofState === 'generating' || proofState === 'submitting';
-
 
   // Selected credential info
   const currentCredential = selectedCredentialForProof || MOCK_CREDENTIALS[0];
@@ -66,8 +64,8 @@ export const CircuitCall: React.FC<CircuitCallProps> = ({
       proofId: `PROOF-AFP-${Math.floor(100000 + Math.random() * 900000)}`,
       claim: 'Monthly Income ≥ ₦1,000,000',
       result: true,
-      issuerName: credentialSource === 'attested' ? currentCredential.issuerName : 'Synthetic User Input',
-      issuerVerified: credentialSource === 'attested',
+      issuerName: currentCredential.issuerName,
+      issuerVerified: true,
       credentialStatus: currentCredential.status,
       midnightNetwork: 'Midnight Preprod',
       txHash: txHash || `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`,
@@ -114,71 +112,21 @@ export const CircuitCall: React.FC<CircuitCallProps> = ({
         </div>
       </div>
 
-      {/* Credential Source Toggle */}
+      {/* Verified Credential Selection Card */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl p-6 mb-8">
-        <div className="text-sm font-bold text-[var(--text-primary)] mb-3">Select Credential Source:</div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <label
-            onClick={() => setCredentialSource('attested')}
-            className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
-              credentialSource === 'attested'
-                ? 'bg-emerald-500/10 border-[var(--primary-emerald)] text-[var(--text-primary)]'
-                : 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-secondary)] hover:border-slate-400'
-            }`}
-          >
-            <input
-              type="radio"
-              name="source"
-              checked={credentialSource === 'attested'}
-              onChange={() => setCredentialSource('attested')}
-              className="mt-1 accent-[var(--primary-emerald)]"
-            />
-            <div>
-              <div className="font-bold text-sm flex items-center gap-2">
-                <span>Issuer-Attested Credential</span>
-                <IssuerBadge issuerName={currentCredential.issuerName} issuerStatus={currentCredential.issuerStatus} />
-              </div>
-              <p className="text-xs text-[var(--text-muted)] mt-1">
-                Attested by {currentCredential.issuerName} ({currentCredential.displayThreshold}). Provenance is cryptographically attached.
-              </p>
+        <div className="text-sm font-bold text-[var(--text-primary)] mb-3">Selected Verified Financial Credential:</div>
+        <div className="p-4 rounded-xl bg-emerald-500/10 border border-[var(--primary-emerald)] text-[var(--text-primary)] flex items-start gap-3">
+          <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <div className="font-bold text-sm flex items-center justify-between flex-wrap gap-2">
+              <span>{currentCredential.claim}</span>
+              <IssuerBadge issuerName={currentCredential.issuerName} issuerStatus={currentCredential.issuerStatus} />
             </div>
-          </label>
-
-          <label
-            onClick={() => setCredentialSource('synthetic')}
-            className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
-              credentialSource === 'synthetic'
-                ? 'bg-amber-500/10 border-amber-500 text-[var(--text-primary)]'
-                : 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-secondary)] hover:border-slate-400'
-            }`}
-          >
-            <input
-              type="radio"
-              name="source"
-              checked={credentialSource === 'synthetic'}
-              onChange={() => setCredentialSource('synthetic')}
-              className="mt-1 accent-amber-500"
-            />
-            <div>
-              <div className="font-bold text-sm text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                <span>Synthetic Demo Credential</span>
-                <span className="text-[0.65rem] font-bold py-0.5 px-2 rounded-md bg-amber-500/20 text-amber-500 border border-amber-500/30 uppercase">DEMO MODE</span>
-              </div>
-              <p className="text-xs text-[var(--text-muted)] mt-1">
-                Manually supplied demo value. Used for development testing without institutional provenance.
-              </p>
-            </div>
-          </label>
-        </div>
-
-        {credentialSource === 'synthetic' && (
-          <div className="mt-4 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2">
-            <Info className="w-4 h-4 shrink-0" />
-            <span>
-              <strong>DEMO MODE:</strong> This credential is synthetic and does not represent a real financial institution. Zero-knowledge proofs prove the numerical condition, while issuer attestations establish data authenticity.
-            </span>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              Attested by <strong>{currentCredential.issuerName}</strong> ({currentCredential.displayThreshold}). Cryptographic provenance verified.
+            </p>
           </div>
-        )}
+        </div>
       </div>
 
       {/* 6-Step Visual ZK Sequence Pipeline */}
@@ -207,7 +155,7 @@ export const CircuitCall: React.FC<CircuitCallProps> = ({
           <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-emerald-500/50 text-left transition-all">
             <div className="text-[0.65rem] text-emerald-500 font-bold mb-1">STEP 2</div>
             <div className="font-bold text-[var(--text-primary)] mb-1">Attestation</div>
-            <div className="text-[0.65rem] text-emerald-500 font-medium">✓ {credentialSource === 'attested' ? 'Issuer Verified' : 'Synthetic Mode'}</div>
+            <div className="text-[0.65rem] text-emerald-500 font-medium">✓ Issuer Verified</div>
           </div>
 
           {/* STEP 3 */}

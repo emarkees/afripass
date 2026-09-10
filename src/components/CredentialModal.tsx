@@ -146,7 +146,7 @@ export const CredentialModal: React.FC<CredentialModalProps> = ({
                 </div>
               </div>
               <p className="text-[var(--text-secondary)] text-[0.8rem] leading-relaxed">
-                1. <strong>Demo Bank</strong> attests to financial records.<br />
+                1. <strong>First Horizon Bank</strong> attests to financial records.<br />
                 2. <strong>AfriPass</strong> stores the attested credential in your local wallet state.<br />
                 3. <strong>Midnight ZK</strong> evaluates the eligibility requirement locally without revealing the underlying financial records.
               </p>

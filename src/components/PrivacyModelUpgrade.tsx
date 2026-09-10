@@ -89,7 +89,7 @@ export const PrivacyModelUpgrade: React.FC = () => {
                 <span className="text-indigo-500 font-bold">•</span> Proof validity result (Requirement satisfied: YES/NO)
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-indigo-500 font-bold">•</span> Attesting institution provenance (e.g. Demo Bank - Verified)
+                <span className="text-indigo-500 font-bold">•</span> Attesting institution provenance (e.g. First Horizon Bank - Verified)
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-indigo-500 font-bold">•</span> Credential status (`Active` / `Valid`)

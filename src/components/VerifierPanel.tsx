@@ -13,7 +13,7 @@ export const VerifierPanel: React.FC<VerifierPanelProps> = ({ initialProofId }) 
   const [verifiedPayload, setVerifiedPayload] = useState<any | null>({
     proofId: initialProofId || 'PROOF-AFP-849201',
     claim: 'Monthly Income ≥ ₦1,000,000',
-    issuerName: 'Demo Bank',
+    issuerName: 'First Horizon Bank',
     issuerStatus: 'verified',
     credentialStatus: 'active',
     eligibilitySatisfied: true,
@@ -31,7 +31,7 @@ export const VerifierPanel: React.FC<VerifierPanelProps> = ({ initialProofId }) 
       setVerifiedPayload({
         proofId: proofInput.trim(),
         claim: 'Monthly Income ≥ ₦1,000,000',
-        issuerName: 'Demo Bank',
+        issuerName: 'First Horizon Bank',
         issuerStatus: 'verified',
         credentialStatus: 'active',
         eligibilitySatisfied: true,

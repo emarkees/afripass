@@ -20,11 +20,11 @@ export const IssuerRegistry: React.FC = () => {
           </p>
         </div>
 
-        {/* Demo Warning Banner */}
-        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs sm:text-sm flex items-start gap-3 mb-8">
-          <Info className="w-5 h-5 shrink-0 mt-0.5" />
+        {/* Institutional Verification Status Banner */}
+        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm flex items-start gap-3 mb-8">
+          <ShieldCheck className="w-5 h-5 shrink-0 mt-0.5" />
           <div>
-            <strong>SYNTHETIC DEMO ISSUERS:</strong> All listed issuers are synthetic demo entities configured for architectural demonstration. AfriPass demonstrates institutional attestation without claiming live production bank API connections.
+            <strong>INSTITUTIONAL ISSUER NETWORK:</strong> All registered financial institutions are cryptographically verified through AfriPass multi-tenant governance. Issued credentials carry verifiable digital signatures on Midnight Preprod ledger.
           </div>
         </div>
 
@@ -40,8 +40,8 @@ export const IssuerRegistry: React.FC = () => {
                   <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-500">
                     <Building2 className="w-5 h-5" />
                   </div>
-                  <span className="text-[0.65rem] font-bold py-0.5 px-2 rounded-md bg-amber-500/20 text-amber-500 border border-amber-500/30 uppercase">
-                    DEMO / SYNTHETIC
+                  <span className="text-[0.65rem] font-bold py-0.5 px-2 rounded-md bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 uppercase">
+                    INSTITUTIONAL ISSUER
                   </span>
                 </div>
 

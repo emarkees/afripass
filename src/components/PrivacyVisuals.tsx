@@ -120,7 +120,7 @@ export const PublicVsPrivateVisual: React.FC = () => {
               circuit input: step (Uint&lt;32&gt;)
             </div>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-              Your private input (e.g. synthetic monthly income credential) is used strictly within the local WebAssembly ZK circuit to construct the mathematical proof. It is never transmitted across the network or logged anywhere.
+              Your private input (e.g. attested monthly income credential value) is used strictly within the local WebAssembly ZK circuit to construct the mathematical proof. It is never transmitted across the network or logged anywhere.
             </p>
           </div>
         </div>

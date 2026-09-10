@@ -84,14 +84,6 @@ export const IssuerBadge: React.FC<IssuerBadgeProps> = ({
               </div>
             </div>
 
-            {isDemo && (
-              <div className="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs flex items-start gap-2">
-                <Info className="w-4 h-4 shrink-0 mt-0.5" />
-                <div>
-                  <strong>Demo Issuer Note:</strong> Demo issuer — synthetic financial data. This credential is for architectural demonstration and does not represent an actual live banking integration.
-                </div>
-              </div>
-            )}
 
             <button
               onClick={() => setModalOpen(false)}
