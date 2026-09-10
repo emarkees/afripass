@@ -41,7 +41,7 @@ Instead:
 
 **EXTEND THE EXISTING APPLICATION.**
 
-The existing Midnight functionality must continue working after every implementation phase.
+The existing Midnight functionality must continue working after every implementation phase. also ensure all new 
 
 ---
 
