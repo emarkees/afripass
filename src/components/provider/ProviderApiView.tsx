@@ -230,7 +230,7 @@ export const ProviderApiView: React.FC = () => {
             Receive automated real-time event notifications for `credential.issued`, `credential.revoked`, and `proof.verified`.
           </p>
           <div className="bg-[var(--bg-surface)] p-4 rounded-xl border border-[var(--border-color)] flex items-center justify-between text-xs">
-            <span className="text-[var(--text-muted)] font-mono">https://api.demobank.ng/webhooks/afripass</span>
+            <span className="text-[var(--text-muted)] font-mono">https://api.firsthorizon.com/webhooks/afripass</span>
             <span className="font-bold text-emerald-500 py-0.5 px-2.5 rounded-full bg-emerald-500/10 border border-emerald-500/30">
               ● Listening
             </span>

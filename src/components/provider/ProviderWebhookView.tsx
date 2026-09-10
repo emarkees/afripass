@@ -17,7 +17,7 @@ interface ProviderWebhookViewProps {
 const INITIAL_WEBHOOKS: WebhookEndpoint[] = [
   {
     id: 'wh-001',
-    url: 'https://api.demobank.ng/webhooks/afripass',
+    url: 'https://api.firsthorizon.com/webhooks/afripass',
     events: ['credential.issued', 'credential.revoked', 'proof.verified'],
     status: 'active',
     secretKey: 'whsec_9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c',

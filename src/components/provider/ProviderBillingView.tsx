@@ -29,7 +29,7 @@ const PLANS: SubscriptionPlan[] = [
     priceAnnual: 0,
     features: [
       'Test/sandbox API access',
-      'Synthetic credential issuance',
+      'Sandbox credential issuance',
       'Test proof verification',
       '1 team member',
       '100 API requests/day',

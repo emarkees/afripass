@@ -76,28 +76,57 @@ export const IssueCredentialView: React.FC<IssueCredentialViewProps> = ({
         </div>
 
         {issuedCred ? (
-          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 mb-6 text-left animate-fadeIn">
-            <div className="flex items-center gap-2 text-emerald-500 font-bold text-base mb-2">
+          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 mb-6 text-left animate-fadeIn space-y-4">
+            <div className="flex items-center gap-2 text-emerald-500 font-bold text-base">
               <CheckCircle2 className="w-5 h-5" /> Credential Successfully Issued & Attested
             </div>
-            <p className="text-xs text-[var(--text-secondary)] mb-4">
-              The financial credential has been cryptographically signed by <strong>{provider.name}</strong> and transferred to the user's private passport.
+            <p className="text-xs text-[var(--text-secondary)]">
+              The financial credential has been cryptographically signed by <strong>{provider.name}</strong> and transferred to the customer's private passport.
             </p>
 
-            <div className="bg-[var(--bg-surface)] p-4 rounded-xl border border-[var(--border-color)] text-xs space-y-2 mb-4 font-mono">
-              <div>Credential ID: <strong>{issuedCred.credentialId}</strong></div>
+            {/* Three-Tier Trust Breakdown */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-4">
+              <div className="p-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] text-xs">
+                <div className="text-[var(--text-muted)] font-medium mb-1">1. User Claim</div>
+                <div className="font-semibold text-amber-500 flex items-center gap-1">
+                  <span>Self-Reported</span>
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-[var(--bg-surface)] border border-emerald-500/30 text-xs">
+                <div className="text-[var(--text-muted)] font-medium mb-1">2. Provider Attestation</div>
+                <div className="font-semibold text-emerald-500 flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Cryptographically Signed
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-[var(--bg-surface)] border border-blue-500/30 text-xs">
+                <div className="text-[var(--text-muted)] font-medium mb-1">3. Midnight ZK Proof</div>
+                <div className="font-semibold text-blue-400 flex items-center gap-1">
+                  <Lock className="w-3.5 h-3.5" /> ZK Witness Ready
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[var(--bg-surface)] p-4 rounded-xl border border-[var(--border-color)] text-xs space-y-2 font-mono">
+              <div>Credential ID: <strong className="text-[var(--primary-emerald)]">{issuedCred.credentialId}</strong></div>
               <div>Claim: <strong>{issuedCred.claim}</strong></div>
-              <div>Issuer: <strong>{issuedCred.issuerName} (✓ Verified)</strong></div>
+              <div>Issuer: <strong>{issuedCred.issuerName} (✓ Institutional Issuer)</strong></div>
               <div>Display Threshold: <strong>{issuedCred.displayThreshold}</strong></div>
+              {issuedCred.signature && (
+                <div className="truncate text-[10px] text-[var(--text-muted)]">
+                  Signature (HMAC-SHA256): <span className="text-[var(--text-primary)]">{issuedCred.signature}</span>
+                </div>
+              )}
               <div>Expiration: <strong>{issuedCred.expiresAt}</strong></div>
             </div>
 
-            <button
-              onClick={() => setIssuedCred(null)}
-              className="py-2.5 px-5 rounded-xl font-bold text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-primary)] hover:border-[var(--primary-emerald)] transition-colors cursor-pointer"
-            >
-              + Issue Another Credential
-            </button>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => setIssuedCred(null)}
+                className="py-2.5 px-5 rounded-xl font-bold text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-primary)] hover:border-[var(--primary-emerald)] transition-colors cursor-pointer"
+              >
+                + Issue Another Credential
+              </button>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">

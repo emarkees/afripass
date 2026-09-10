@@ -18,7 +18,7 @@ export const ProviderLoginView: React.FC<ProviderLoginViewProps> = ({
   onNavigateToForgotPassword,
   onNavigateToVerifyEmail,
 }) => {
-  const [email, setEmail] = useState<string>('compliance@demobank.ng');
+  const [email, setEmail] = useState<string>('compliance@firsthorizon.com');
   const [password, setPassword] = useState<string>('••••••••••••');
   const [rememberMe, setRememberMe] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);

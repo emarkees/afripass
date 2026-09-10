@@ -18,7 +18,7 @@ const INITIAL_MEMBERS: TeamMember[] = [
   {
     id: 'mem-001',
     name: 'Amina Bello',
-    email: 'compliance@demobank.ng',
+    email: 'compliance@firsthorizon.com',
     role: 'OWNER',
     status: 'active',
     createdAt: '2026-03-01',
@@ -26,7 +26,7 @@ const INITIAL_MEMBERS: TeamMember[] = [
   {
     id: 'mem-002',
     name: 'Tunde Afolayan',
-    email: 'issuance@demobank.ng',
+    email: 'issuance@firsthorizon.com',
     role: 'ISSUER',
     status: 'active',
     createdAt: '2026-06-15',
@@ -34,7 +34,7 @@ const INITIAL_MEMBERS: TeamMember[] = [
   {
     id: 'mem-003',
     name: 'Kofi Mensah',
-    email: 'devs@demobank.ng',
+    email: 'devs@firsthorizon.com',
     role: 'DEVELOPER',
     status: 'active',
     createdAt: '2026-08-01',
@@ -42,7 +42,7 @@ const INITIAL_MEMBERS: TeamMember[] = [
   {
     id: 'mem-004',
     name: 'Sarah Akintola',
-    email: 'audit@demobank.ng',
+    email: 'audit@firsthorizon.com',
     role: 'AUDITOR',
     status: 'invited',
     createdAt: '2026-09-02',
@@ -192,7 +192,7 @@ export const ProviderTeamView: React.FC<ProviderTeamViewProps> = ({ currentProvi
                 <input
                   type="email"
                   required
-                  placeholder="staff@demobank.ng"
+                  placeholder="staff@firsthorizon.com"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"

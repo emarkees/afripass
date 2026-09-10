@@ -55,7 +55,7 @@ export const ProviderDirectoryView: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search provider by institution name or country (e.g. Nigeria, Kenya, Demo Bank)..."
+            placeholder="Search provider by institution name or country (e.g. Nigeria, Kenya, First Horizon)..."
             className="w-full py-3 pl-10 pr-4 rounded-xl bg-[var(--bg-input)] border border-[var(--border-color)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary-emerald)]"
           />
           <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2" />
