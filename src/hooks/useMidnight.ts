@@ -268,10 +268,15 @@ export function useMidnight() {
     });
   }, [state.lastCounter]);
 
-  // Execute circuit call increment_counter(step)
-  const callCircuit = useCallback(async (stepAmount: number) => {
+  // Execute circuit call verify_eligibility(income)
+  const callCircuit = useCallback(async (income: number) => {
     if (!state.isConnected) {
       setState((prev) => ({ ...prev, error: 'Please connect your Midnight wallet first.' }));
+      return;
+    }
+
+    if (income < 350000) {
+      setState((prev) => ({ ...prev, error: 'Income does not meet the minimum eligibility requirement (350,000 NGN).' }));
       return;
     }
 
