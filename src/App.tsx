@@ -50,10 +50,13 @@ export function App() {
     isConnected,
     address,
     networkId,
+    walletName,
+    availableWallets,
     error,
     isLaceInstalled,
     connect,
     disconnect,
+    switchNetwork,
     callCircuit,
     proofState,
     txHash,
@@ -116,7 +119,7 @@ export function App() {
     <div className="h-screen h-dvh flex flex-col w-full overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)]">
       {/* Top Status & Environment Bar */}
       <header className="shrink-0 w-full z-50 bg-[var(--bg-primary)]/90 backdrop-blur-md border-b border-[var(--border-color)]">
-        <EnvironmentIndicator />
+        <EnvironmentIndicator networkId={networkId} onSwitchNetwork={switchNetwork} />
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           <a
             href="#"
@@ -186,15 +189,18 @@ export function App() {
               )}
             </button>
 
-            {/* Lace Wallet Connect Button - Stays on Nav */}
+            {/* Midnight Multi-Wallet Connect Button */}
             <WalletConnect
               isConnected={isConnected}
               address={address}
               networkId={networkId}
+              walletName={walletName}
+              availableWallets={availableWallets}
               error={error}
               isLaceInstalled={isLaceInstalled}
               onConnect={connect}
               onDisconnect={disconnect}
+              onSwitchNetwork={switchNetwork}
             />
 
             {/* Mobile Hamburger Toggle Button */}
@@ -340,7 +346,7 @@ export function App() {
                 <div className="flex flex-wrap gap-4 justify-center mb-12">
                   {!isConnected ? (
                     <button
-                      onClick={connect}
+                      onClick={() => connect()}
                       className="inline-flex items-center justify-center gap-2 py-3.5 px-8 rounded-xl font-bold text-[1.05rem] cursor-pointer border-0 text-white bg-gradient-to-br from-[var(--primary-emerald)] to-[var(--emerald-hover)] hover:brightness-105 transition-all shadow-sm"
                     >
                       Connect Midnight Wallet <ChevronRight className="w-4 h-4" />
@@ -430,6 +436,7 @@ export function App() {
             <section className="w-full max-w-6xl mx-auto px-4 sm:px-6">
               <CircuitCall
                 isConnected={isConnected}
+                networkId={networkId}
                 proofState={proofState}
                 txHash={txHash}
                 lastCounter={lastCounter}
