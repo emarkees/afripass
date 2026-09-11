@@ -1,16 +1,30 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { MIDNIGHT_CONFIG } from '../config/midnightConfig';
+import { MIDNIGHT_CONFIG, MIDNIGHT_NETWORKS, NetworkMetadata } from '../config/midnightConfig';
 
-/** Current operational state of the Midnight Lace DApp connection */
+export interface MidnightWalletInfo {
+  key: string;
+  name: string;
+  icon?: string;
+  apiVersion?: string;
+  provider: any;
+}
+
+/** Current operational state of the Midnight DApp connection */
 export interface MidnightState {
-  /** Whether the Lace wallet is currently connected */
+  /** Whether a Midnight wallet is currently connected */
   isConnected: boolean;
   /** Public wallet address string */
   address: string | null;
-  /** Active Midnight network identifier (e.g. 'preprod', 'undeployed') */
-  networkId: string | null;
+  /** Active Midnight network identifier ('preprod' | 'preview' | string) */
+  networkId: 'preprod' | 'preview' | string;
+  /** Key of the selected injected wallet provider */
+  selectedWalletKey: string | null;
+  /** Name of the connected wallet provider */
+  walletName: string | null;
+  /** Available Midnight wallets discovered in window.midnight */
+  availableWallets: MidnightWalletInfo[];
   /** Human-readable error message or null */
   error: string | null;
   /** Current zero-knowledge proof generation lifecycle stage */
@@ -27,16 +41,11 @@ declare global {
   }
 }
 
-const PREPROD_CONTRACT_ADDRESS = MIDNIGHT_CONFIG.PREPROD_CONTRACT_ADDRESS;
-const MIDNIGHT_NETWORK_ID = MIDNIGHT_CONFIG.DEFAULT_NETWORK_ID;
-
-
 /**
  * Discover all Midnight-compatible wallet providers injected into window.midnight.
- * Lace (and other wallets) inject under unique UUID keys, NOT hardcoded names.
- * We enumerate all keys and return providers that have the expected API shape.
+ * Supports Lace, Nightly, Mesh, and any generic Midnight CIP-30 adapter.
  */
-const discoverMidnightProviders = (): Array<{ key: string; provider: any }> => {
+export const discoverMidnightProviders = (): MidnightWalletInfo[] => {
   if (typeof window === 'undefined' || !window.midnight) return [];
 
   return Object.entries(window.midnight)
@@ -44,25 +53,51 @@ const discoverMidnightProviders = (): Array<{ key: string; provider: any }> => {
       return (
         provider &&
         typeof provider === 'object' &&
-        (typeof provider.enable === 'function' || typeof provider.connect === 'function' || typeof provider.name === 'string')
+        (typeof provider.enable === 'function' ||
+          typeof provider.connect === 'function' ||
+          typeof provider.name === 'string' ||
+          provider.isLace ||
+          provider.apiVersion)
       );
     })
-    .map(([key, provider]) => ({ key, provider }));
-};
+    .map(([key, provider]) => {
+      let name = provider.name || key;
+      if (key.toLowerCase().includes('lace') || provider.isLace) {
+        name = 'Lace (Midnight)';
+      } else if (key.toLowerCase().includes('nightly')) {
+        name = 'Nightly Wallet';
+      } else if (key.toLowerCase().includes('mesh')) {
+        name = 'Mesh Wallet';
+      } else if (name === key) {
+        name = key.charAt(0).toUpperCase() + key.slice(1);
+      }
 
-/**
- * Get the first available Midnight wallet provider.
- */
-const getFirstProvider = (): any | null => {
-  const providers = discoverMidnightProviders();
-  return providers.length > 0 ? providers[0].provider : null;
+      return {
+        key,
+        name,
+        icon: provider.icon || provider.iconUrl,
+        apiVersion: provider.apiVersion,
+        provider,
+      };
+    });
 };
 
 export function useMidnight() {
+  const getInitialNetwork = (): 'preprod' | 'preview' => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('afripass_midnight_network');
+      if (saved === 'preview' || saved === 'preprod') return saved;
+    }
+    return MIDNIGHT_CONFIG.DEFAULT_NETWORK_ID;
+  };
+
   const [state, setState] = useState<MidnightState>({
     isConnected: false,
     address: null,
-    networkId: MIDNIGHT_NETWORK_ID,
+    networkId: getInitialNetwork(),
+    selectedWalletKey: null,
+    walletName: null,
+    availableWallets: [],
     error: null,
     proofState: 'idle',
     txHash: null,
@@ -73,33 +108,51 @@ export function useMidnight() {
 
   // Poll for Midnight wallet extension injection (extensions load asynchronously)
   useEffect(() => {
-    const checkWallet = () => {
-      const provider = getFirstProvider();
-      setIsWalletDetected(Boolean(provider));
+    const checkWallets = () => {
+      const wallets = discoverMidnightProviders();
+      setIsWalletDetected(wallets.length > 0);
+      setState((prev) => {
+        if (JSON.stringify(prev.availableWallets.map((w) => w.key)) !== JSON.stringify(wallets.map((w) => w.key))) {
+          return { ...prev, availableWallets: wallets };
+        }
+        return prev;
+      });
     };
 
-    checkWallet();
-    const interval = setInterval(checkWallet, 500);
-    window.addEventListener('focus', checkWallet);
+    checkWallets();
+    const interval = setInterval(checkWallets, 500);
+    window.addEventListener('focus', checkWallets);
 
     return () => {
       clearInterval(interval);
-      window.removeEventListener('focus', checkWallet);
+      window.removeEventListener('focus', checkWallets);
     };
   }, []);
 
   /**
-   * Connect to the Midnight account on the Lace extension.
-   * Calls provider.enable() or provider.connect() which triggers the Lace
-   * extension popup asking the user to approve the dApp connection.
+   * Switch the active network between 'preprod' and 'preview'.
    */
-  const connect = useCallback(async () => {
+  const switchNetwork = useCallback((targetNetwork: 'preprod' | 'preview') => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('afripass_midnight_network', targetNetwork);
+    }
+    setState((prev) => ({
+      ...prev,
+      networkId: targetNetwork,
+      error: null,
+    }));
+  }, []);
+
+  /**
+   * Connect to a specific or default Midnight wallet provider.
+   */
+  const connect = useCallback(async (requestedWalletKey?: string, targetNetwork?: 'preprod' | 'preview') => {
     setState((prev) => ({ ...prev, error: null }));
 
-    const provider = getFirstProvider();
+    const activeNet = targetNetwork || (state.networkId as 'preprod' | 'preview') || MIDNIGHT_CONFIG.DEFAULT_NETWORK_ID;
 
-    if (!provider) {
-      // Debug: log what's actually in window.midnight
+    const wallets = discoverMidnightProviders();
+    if (wallets.length === 0) {
       const midnightKeys = typeof window !== 'undefined' && window.midnight
         ? Object.keys(window.midnight)
         : [];
@@ -108,28 +161,33 @@ export function useMidnight() {
 
       setState((prev) => ({
         ...prev,
-        error: `Midnight wallet not found. Please ensure you have the Lace extension installed with a Midnight account enabled, then refresh the page. (Detected providers: ${midnightKeys.length})`,
+        error: `No Midnight-compatible wallet found. Please install Lace, Nightly, or any Midnight wallet extension and refresh the page.`,
       }));
       return;
     }
 
-    console.log('[AfriPass] Connecting to Midnight provider:', provider.name || 'unknown');
+    // Pick requested wallet, or previously selected, or first available
+    const chosenWallet = requestedWalletKey
+      ? wallets.find((w) => w.key === requestedWalletKey) || wallets[0]
+      : wallets.find((w) => w.key === state.selectedWalletKey) || wallets[0];
+
+    const provider = chosenWallet.provider;
+    console.log(`[AfriPass] Connecting to ${chosenWallet.name} on network: ${activeNet}`);
 
     try {
       let api: any;
-      let activeNetworkId: string = MIDNIGHT_NETWORK_ID;
+      let connectedNetworkId: string = activeNet;
 
-      // Candidate network IDs to attempt if Lace extension is set to a different network
       const candidates = Array.from(
-        new Set([MIDNIGHT_NETWORK_ID, 'preprod', 'undeployed', 'preview', 'devnet', 'testnet'])
+        new Set([activeNet, activeNet === 'preview' ? 'preprod' : 'preview', 'undeployed', 'devnet', 'testnet'])
       );
 
       let lastError: any = null;
 
-      // 1. Try provider.enable() first if exposed
+      // 1. Try provider.enable(activeNet) first if exposed
       if (typeof provider.enable === 'function') {
         try {
-          api = await provider.enable();
+          api = await provider.enable(activeNet);
         } catch (e: any) {
           lastError = e;
           if (
@@ -150,12 +208,11 @@ export function useMidnight() {
           try {
             console.log(`[AfriPass] Attempting connect with network ID: '${candidateNet}'`);
             api = await provider.connect(candidateNet);
-            activeNetworkId = candidateNet;
+            connectedNetworkId = candidateNet;
             lastError = null;
             break;
           } catch (e: any) {
             lastError = e;
-            // Stop immediately if user explicitly declined/cancelled in the extension popup
             if (
               e?.message?.toLowerCase().includes('user') ||
               e?.message?.toLowerCase().includes('cancel') ||
@@ -170,7 +227,7 @@ export function useMidnight() {
       }
 
       if (!api) {
-        throw lastError || new Error('Wallet provider found but connection could not be established.');
+        throw lastError || new Error(`Could not establish connection with ${chosenWallet.name}.`);
       }
 
       // Extract and format the wallet address from the connected API
@@ -213,21 +270,27 @@ export function useMidnight() {
       if (!userAddress) {
         setState((prev) => ({
           ...prev,
-          error: 'Connected to Lace but could not retrieve your Midnight address. Please ensure you have a Midnight account configured.',
+          error: `Connected to ${chosenWallet.name} but could not retrieve your Midnight wallet address.`,
         }));
         return;
+      }
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('afripass_midnight_wallet', chosenWallet.key);
+        localStorage.setItem('afripass_midnight_network', connectedNetworkId);
       }
 
       setState((prev) => ({
         ...prev,
         isConnected: true,
         address: userAddress,
-        networkId: activeNetworkId,
+        networkId: connectedNetworkId,
+        selectedWalletKey: chosenWallet.key,
+        walletName: chosenWallet.name,
         error: null,
       }));
     } catch (err: any) {
       console.error('[AfriPass] Midnight wallet connection error:', err);
-
       const msg = err?.message?.toLowerCase() || '';
 
       if (
@@ -239,34 +302,33 @@ export function useMidnight() {
       ) {
         setState((prev) => ({
           ...prev,
-          error: 'Connection request was declined. Please approve the connection in your Lace extension popup.',
+          error: `Connection request was declined. Please approve the prompt in ${chosenWallet.name}.`,
         }));
       } else if (msg.includes('network') && msg.includes('mismatch')) {
         setState((prev) => ({
           ...prev,
-          error: 'Network ID Mismatch: Your Lace extension is set to a different network. Please switch your network in Lace settings (e.g., Preprod or Undeployed) and try connecting again.',
+          error: `Network ID Mismatch: Your wallet is configured for a different network. Switch your wallet settings to ${activeNet} and try again.`,
         }));
       } else {
         setState((prev) => ({
           ...prev,
-          error: err?.message || 'Failed to connect to Midnight wallet via Lace.',
+          error: err?.message || `Failed to connect to ${chosenWallet.name}.`,
         }));
       }
     }
-  }, []);
+  }, [state.networkId, state.selectedWalletKey]);
 
   // Disconnect wallet
   const disconnect = useCallback(() => {
-    setState({
+    setState((prev) => ({
+      ...prev,
       isConnected: false,
       address: null,
-      networkId: MIDNIGHT_NETWORK_ID,
       error: null,
       proofState: 'idle',
       txHash: null,
-      lastCounter: state.lastCounter,
-    });
-  }, [state.lastCounter]);
+    }));
+  }, []);
 
   // Execute circuit call verify_eligibility(income)
   const callCircuit = useCallback(async (income: number) => {
@@ -279,6 +341,8 @@ export function useMidnight() {
       setState((prev) => ({ ...prev, error: 'Income does not meet the minimum eligibility requirement (350,000 NGN).' }));
       return;
     }
+
+    const netName = state.networkId === 'preview' ? 'Midnight Preview' : 'Midnight Preprod';
 
     setState((prev) => ({
       ...prev,
@@ -293,7 +357,7 @@ export function useMidnight() {
 
       setState((prev) => ({ ...prev, proofState: 'submitting' }));
 
-      // Simulate ledger transaction submission to Preprod contract (1.5s)
+      // Simulate ledger transaction submission to active network contract (1.5s)
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       const randomTxHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
@@ -310,17 +374,23 @@ export function useMidnight() {
       setState((prev) => ({
         ...prev,
         proofState: 'error',
-        error: 'Failed to generate zero-knowledge proof or submit to Midnight Preprod.',
+        error: `Failed to generate zero-knowledge proof or submit to ${netName}.`,
       }));
     }
-  }, [state.isConnected]);
+  }, [state.isConnected, state.networkId]);
+
+  const activeNetworkMetadata: NetworkMetadata = MIDNIGHT_CONFIG.getNetworkMetadata(state.networkId || 'preprod');
 
   return {
     ...state,
     isLaceInstalled: isWalletDetected,
+    availableWallets: state.availableWallets,
     connect,
     disconnect,
+    switchNetwork,
     callCircuit,
-    contractAddress: PREPROD_CONTRACT_ADDRESS,
+    contractAddress: activeNetworkMetadata.contractAddress,
+    networkMetadata: activeNetworkMetadata,
   };
 }
+
