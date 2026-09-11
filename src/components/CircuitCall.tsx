@@ -10,6 +10,7 @@ import { MOCK_CREDENTIALS } from '../data/mockCredentials';
 
 interface CircuitCallProps {
   isConnected: boolean;
+  networkId?: string | null;
   proofState: 'idle' | 'generating' | 'submitting' | 'success' | 'error';
   txHash: string | null;
   lastCounter: number;
@@ -23,6 +24,7 @@ interface CircuitCallProps {
 
 export const CircuitCall: React.FC<CircuitCallProps> = ({
   isConnected,
+  networkId = 'preprod',
   proofState,
   txHash,
   lastCounter,
@@ -38,6 +40,7 @@ export const CircuitCall: React.FC<CircuitCallProps> = ({
   const [activeProofResult, setActiveProofResult] = useState<ProofResult | null>(null);
   const [resultModalOpen, setResultModalOpen] = useState<boolean>(false);
 
+  const activeNetworkName = networkId === 'preview' ? 'Midnight Preview' : 'Midnight Preprod';
   const isInputValid = Boolean(stepInput && stepInput.trim() !== '' && !isNaN(Number(stepInput)) && Number(stepInput) > 0);
   const isButtonDisabled = !isInputValid || proofState === 'generating' || proofState === 'submitting';
 
@@ -67,7 +70,7 @@ export const CircuitCall: React.FC<CircuitCallProps> = ({
       issuerName: currentCredential.issuerName,
       issuerVerified: true,
       credentialStatus: currentCredential.status,
-      midnightNetwork: 'Midnight Preprod',
+      midnightNetwork: activeNetworkName,
       txHash: txHash || `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`,
       underlyingDataDisclosed: false,
       createdAt: new Date().toISOString().split('T')[0],
@@ -84,14 +87,14 @@ export const CircuitCall: React.FC<CircuitCallProps> = ({
         </span>
         <h3 className="text-2xl sm:text-3xl font-bold mb-2">Prove Income Eligibility</h3>
         <p className="text-[var(--text-secondary)] text-sm sm:text-base max-w-2xl mx-auto">
-          Prove that your verified income satisfies the required threshold (≥ ₦1,000,000) on the Midnight Preprod contract without exposing underlying bank statements.
+          Prove that your verified income satisfies the required threshold (≥ ₦1,000,000) on the {activeNetworkName} contract without exposing underlying bank statements.
         </p>
       </div>
 
       {/* Contract & State Metadata Header */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 w-full">
         <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl p-4 flex flex-col justify-between">
-          <div className="text-[0.75rem] text-[var(--text-muted)] font-semibold uppercase tracking-wider">PREPROD CONTRACT</div>
+          <div className="text-[0.75rem] text-[var(--text-muted)] font-semibold uppercase tracking-wider">{networkId === 'preview' ? 'PREVIEW CONTRACT' : 'PREPROD CONTRACT'}</div>
           <div className="font-mono text-xs font-semibold break-all mt-1 text-[var(--primary-emerald)]">
             {contractAddress.slice(0, 14)}...{contractAddress.slice(-10)}
           </div>

@@ -99,7 +99,7 @@ export const PassportDashboard: React.FC<PassportDashboardProps> = ({
 
           {/* Card 5: Wallet Status */}
           <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl p-5 flex flex-col justify-between shadow-sm sm:col-span-2 lg:col-span-1">
-            <div className="text-xs text-[var(--text-muted)] font-semibold uppercase tracking-wider mb-2">LACE WALLET</div>
+            <div className="text-xs text-[var(--text-muted)] font-semibold uppercase tracking-wider mb-2">MIDNIGHT WALLET</div>
             <div className="flex items-center gap-2">
               <Wallet className="w-5 h-5 text-[var(--primary-emerald)] shrink-0" />
               <span className="font-bold text-sm text-[var(--text-primary)] truncate">
